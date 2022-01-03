@@ -8,7 +8,7 @@
   },
   "author": "Martin Hoppe",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "files": [
     "dist/**/*.{ts,js}"
   ],

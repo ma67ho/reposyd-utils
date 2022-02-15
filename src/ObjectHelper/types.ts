@@ -1,10 +1,29 @@
-export type cm = {
-  modifiedBy: {
-    uuid: uuid;
-  };
-};
+export enum AttributeTypes {
+  boolean = "boolean",
+  calculated = "calculated",
+  choice = "choice",
+  date = "date",
+  datetime = "datetime",
+  enumeration = "enumeration",
+  enumerationwithforms = "enumerationwithforms",
+  id = "id",
+  matrix = "matrix",
+  number = "number",
+  properties = "properties",
+  resource_pm = "resource_pm",
+  string = "string",
+  text = "text",
+  url = "url",
+  useraccount = "useraccount",
+  value = "value",
+}
 
-export type uuid = string | null;
+export type DesignDataOwnerData = {
+  name?: string | null
+  uuid: Uuid
+}
+
+export type Uuid = string | null;
 
 export type WorkLog = {
   uuid: string;
@@ -91,7 +110,7 @@ export type ContactActivityLogRecorded = {
     account: string | null;
     firstname: string | null;
     lastname: string | null;
-    uuid: uuid;
+    uuid: Uuid;
   };
   on: Date | null;
 };
@@ -99,6 +118,7 @@ export type ContactActivityLogRecorded = {
 export type ContactActivityLogAction = Action;
 
 export type ContactActivityLogMinutesOfMeeting = {
+  uuid: Uuid
 };
 
 export type ContactActivityLogTelephoneCall = {
@@ -109,14 +129,14 @@ export type ContactActivityLogTelephoneCall = {
 export type ContactActivityLog = Array<ContactActivityLogEntry>;
 
 export type ContactActivityLogEntry = {
-  uuid: uuid;
+  uuid: Uuid;
   action?: ContactActivityLogAction;
-  mon?: ContactActivityLogMinutesOfMeeting;
+  meeting?: ContactActivityLogMinutesOfMeeting;
   phonecall?: ContactActivityLogTelephoneCall;
   recorded: ContactActivityLogRecorded;
   type: ContactActivityLogEntryType;
-  cm: cm;
-  repository: uuid;
+  cm: DesignDataConfigurationManagementData;
+  repository: Uuid;
 };
 
 export enum ContactActivityLogEntryType {
@@ -128,32 +148,84 @@ export enum ContactActivityLogEntryType {
 }
 
 export type DesignDataAttributeDefinition = {
-  uuid: uuid;
+  properties: DesignDataAttributeDefinitionProperties
+  type: AttributeTypes;
+  uuid: Uuid;
 };
 
+export type DesignDataAttributeDefinitionProperties = {
+  default: unknown
+  enumeration?: Array<DesignDataEnumerationDefinition>
+}
+
+export type DesignDataConfigurationManagementData = {
+  modifiedby: {
+    account: string | null
+    firstname: string | null
+    surname: string | null
+    uuid: Uuid;
+  };
+  owner: DesignDataOwnerData
+  revision: number
+  shared: Uuid | Array<Uuid> | null
+  timestamp: Date | null
+};
+
+export type DesignDataEnumerationDefinition = {
+  key: string,
+  properties: DesignDataEnumerationDefinitionProperties
+}
+
+export type DesignDataEnumerationDefinitionProperties = {
+  form?: DesignDataEnumerationDefinitionPropertiesForm
+}
+
+export type DesignDataEnumerationDefinitionPropertiesFormField = {
+  default: unknown
+  id: string
+}
+
+export type DesignDataEnumerationDefinitionPropertiesForm = {
+  fields: Array<DesignDataEnumerationDefinitionPropertiesFormField>
+}
+
 export type DesignDataObjectDefinition = {
-  uuid: uuid;
+  attributes: Record<string,DesignDataAttributeDefinition>
+  id: string
+  uuid: Uuid;
 };
 export type DesignDataLink = {
-  uuid: uuid
+  uuid: Uuid
 }
 
 export type DesignDataObject = {
-  uuid: uuid;
+  attributes: unknown
+  cm: DesignDataConfigurationManagementData
+  id: string | null
+  puid: string | null
+  uuid: Uuid | null;
   definition: DesignDataObjectDefinition;
 };
 
 export type MemberReference = {
-  uuid: uuid
+  uuid: Uuid
+}
+
+export type MinutesOfMeeting = {
+  uuid: Uuid
+  dsuuid: Uuid
+  language: string
+  location: string,
+  rpuuid: null
 }
 
 export type Project = {
   name: string
   solutions: Array<Solution>
-  uuid: uuid
+  uuid: Uuid
 }
 
 export type Solution = {
   name: string
-  uuid: uuid
+  uuid: Uuid
 }

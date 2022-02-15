@@ -1,143 +1,176 @@
-import { ChapterNumber,ChapterNumberStyle, isRomanNumber } from '../src/LexicographicalOrder/ChapterNumber'
+// import { LexicographicalOrder.ChapterNumber,ChapterNumberStyle, isRomanNumber } from '../src/LexicographicalOrder/LexicographicalOrder.ChapterNumber'
+import {LexicographicalOrder } from '../src'
 import { expect } from 'chai';
+import { NumberStyle } from '../src/types';
+
 
 describe('Module LexicographicalOrder', () => { 
-  describe('ChaperNumber', () => {
+  describe('ChatperNumber', () => {
     it('isRomanNumber', () => {
-      expect(isRomanNumber('')).to.be.false
-      expect(isRomanNumber('A')).to.be.false
-      expect(isRomanNumber('C')).to.be.true
-      expect(isRomanNumber('D')).to.be.true
-      expect(isRomanNumber('I')).to.be.true
-      expect(isRomanNumber('L')).to.be.true
-      expect(isRomanNumber('M')).to.be.true
-      expect(isRomanNumber('V')).to.be.true
-      expect(isRomanNumber('X')).to.be.true
+      expect(LexicographicalOrder.isRomanNumber('')).to.be.false
+      expect(LexicographicalOrder.isRomanNumber('A')).to.be.false
+      expect(LexicographicalOrder.isRomanNumber('C')).to.be.true
+      expect(LexicographicalOrder.isRomanNumber('D')).to.be.true
+      expect(LexicographicalOrder.isRomanNumber('I')).to.be.true
+      expect(LexicographicalOrder.isRomanNumber('L')).to.be.true
+      expect(LexicographicalOrder.isRomanNumber('M')).to.be.true
+      expect(LexicographicalOrder.isRomanNumber('V')).to.be.true
+      expect(LexicographicalOrder.isRomanNumber('X')).to.be.true
     })
-    it('contruct empty ChapterNumber', () => { // the single test
-      const cn = new ChapterNumber()
-      expect(cn).to.be.an.instanceof(ChapterNumber)
+    it('contruct empty LexicographicalOrder.ChapterNumber', () => { // the single test
+      const cn = new LexicographicalOrder.ChapterNumber()
+      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
       expect(cn.levels).to.equal(0)
       expect(cn.toString()).to.equal('')
     })
-    it("construct ChapterNumber('1')", () => {
-      const cn = new ChapterNumber('1')
-      expect(cn).to.be.an.instanceof(ChapterNumber)
+    it("construct LexicographicalOrder.ChapterNumber('1')", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
       expect(cn.levels).to.equal(1)
       expect(cn.toString()).to.equal('1')
     })
-    it("construct ChapterNumber('I')", () => {
-      const cn = new ChapterNumber('I')
-      expect(cn).to.be.an.instanceof(ChapterNumber)
+    it("construct LexicographicalOrder.ChapterNumber('I')", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('I')
+      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
       expect(cn.levels).to.equal(1)
       expect(cn.toString()).to.equal('I')
     })
-    it("ChapterNumber('1') - add()", () => {
-      const cn = new ChapterNumber('1')
+    it("add()", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
       cn.add()
       expect(cn.levels).to.equal(2)
       expect(cn.toString()).to.equal('1.1')
     })
-    it("ChapterNumber('1') - add(ChapterNumberStyle.Arabic)", () => {
-      const cn = new ChapterNumber('1')
-      cn.add(ChapterNumberStyle.Arabic)
+    it("add(start: 10)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(10)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.10')
+    })
+    it("add(style: Arabic)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.Arabic)
       expect(cn.levels).to.equal(2)
       expect(cn.toString()).to.equal('1.1')
     })
-    it("ChapterNumber('I') - add(ChapterNumberStyle.Roman)", () => {
-      const cn = new ChapterNumber('1')
-      cn.add(ChapterNumberStyle.Roman)
+    it("add(style: Roman)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.Roman)
       expect(cn.levels).to.equal(2)
       expect(cn.toString()).to.equal('1.I')
     })
-    it("ChapterNumber('I') - inc()", () => {
-      const cn = new ChapterNumber('1')
+    it("add(style: RomanUpperCase)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.RomanUpperCase)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.I')
+    })
+    it("add(style: RomanLowerCase)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.RomanLowerCase)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.i')
+    })
+    it("add(start: 5, style: RomanUpperCase)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.RomanUpperCase, 5)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.V')
+    })
+    it("add(start: 10, style: RomanLowerCase)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.RomanLowerCase, 10)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.x')
+    })
+    it("inc()", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
       cn.inc()
       expect(cn.toString()).to.equal('2')
     })
-    it("ChapterNumber('I') - inc(2)", () => {
-      const cn = new ChapterNumber('1')
+    it("inc(2)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
       cn.inc(2)
       expect(cn.toString()).to.equal('3')
     })
-    it("ChapterNumber('I') - dec()", () => {
-      let cn = new ChapterNumber('1')
+    it("dec()", () => {
+      let cn = new LexicographicalOrder.ChapterNumber('1')
       cn.dec()
       expect(cn.toString()).to.equal('0')
       cn.dec()
       expect(cn.toString()).to.equal('0')
-      cn = new ChapterNumber('I')
+      cn = new LexicographicalOrder.ChapterNumber('I')
       cn.dec()
       expect(cn.toString()).to.equal('I')
       cn.dec()
       expect(cn.toString()).to.equal('I')
     })
-    it("ChapterNumber('I') - dec(2)", () => {
-      const cn = new ChapterNumber('3')
+    it("dec(2)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('3')
       cn.dec(2)
       expect(cn.toString()).to.equal('1')
     })
-    it("construct ChapterNumber('1.1')", () => {
-      const cn = new ChapterNumber('1.1')
-      expect(cn).to.be.an.instanceof(ChapterNumber)
+    it("construct LexicographicalOrder.ChapterNumber('1.1')", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1.1')
+      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
       expect(cn.levels).to.equal(2)
       expect(cn.toString()).to.equal('1.1')
     })
-    it("ChapterNumber('1.1') - add()", () => {
-      const cn = new ChapterNumber('1.1')
+    it("add()", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1.1')
       cn.add()
       expect(cn.levels).to.equal(3)
       expect(cn.toString()).to.equal('1.1.1')
     })
-    it("ChapterNumber('1.1.1') - remove()", () => {
-      const cn = new ChapterNumber('1.1.1')
+    it("remove()", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1.1.1')
       cn.remove()
       expect(cn.levels).to.equal(2)
       expect(cn.toString()).to.equal('1.1')
     })
-    it("ChapterNumber('1') === ChapterNumber('1')", () => {
-      const a = new ChapterNumber('1')
-      const b = new ChapterNumber('1')
+    it("comapre('1', '1')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('1')
+      const b = new LexicographicalOrder.ChapterNumber('1')
       expect(a.compare(b)).to.equal(0)
       expect(a.isEqual(b)).to.be.true
       expect(a.isGreater(b)).to.be.false
       expect(a.isLess(b)).to.be.false
     })
-    it("ChapterNumber('1') === ChapterNumber('I')", () => {
-      const a = new ChapterNumber('1')
-      const b = new ChapterNumber('I')
+    it("compare('1', 'I')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('1')
+      const b = new LexicographicalOrder.ChapterNumber('I')
       expect(a.compare(b)).to.equal(0)
       expect(a.isEqual(b)).to.be.true
       expect(a.isGreater(b)).to.be.false
       expect(a.isLess(b)).to.be.false
     })
-    it("ChapterNumber('1') < ChapterNumber('2')", () => {
-      const a = new ChapterNumber('1')
-      const b = new ChapterNumber('2')
+    it("compare('1', '2')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('1')
+      const b = new LexicographicalOrder.ChapterNumber('2')
       expect(a.compare(b)).to.equal(-1)
       expect(a.isEqual(b)).to.be.false
       expect(a.isGreater(b)).to.be.false
       expect(a.isLess(b)).to.be.true
     })
-    it("ChapterNumber('1') < ChapterNumber('II')", () => {
-      const a = new ChapterNumber('1')
-      const b = new ChapterNumber('II')
+    it("compare('1', 'II')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('1')
+      const b = new LexicographicalOrder.ChapterNumber('II')
       expect(a.compare(b)).to.equal(-1)
       expect(a.isEqual(b)).to.be.false
       expect(a.isGreater(b)).to.be.false
       expect(a.isLess(b)).to.be.true
     })
-    it("ChapterNumber('2') > ChapterNumber('1')", () => {
-      const a = new ChapterNumber('2')
-      const b = new ChapterNumber('1')
+    it("compare('2', ('1')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('2')
+      const b = new LexicographicalOrder.ChapterNumber('1')
       expect(a.compare(b)).to.equal(1)
       expect(a.isEqual(b)).to.be.false
       expect(a.isGreater(b)).to.be.true
       expect(a.isLess(b)).to.be.false
     })
-    it("ChapterNumber('II') > ChapterNumber('1')", () => {
-      const a = new ChapterNumber('II')
-      const b = new ChapterNumber('1')
+    it("compare('II', '1')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('II')
+      const b = new LexicographicalOrder.ChapterNumber('1')
       expect(a.compare(b)).to.equal(1)
       expect(a.isEqual(b)).to.be.false
       expect(a.isGreater(b)).to.be.true

@@ -53,9 +53,18 @@ export default {
           },
           type: type,
           cm: {
-            modifiedBy: {
+            modifiedby: {
+              account: null,
+              firstname: null,
+              surname: null,
               uuid: null,
             },
+            owner: {
+              uuid: null
+            },
+            revision: -1,
+            shared: null,
+            timestamp: null
           },
         };
         if (type === ContactActivityLogEntryType.action) {

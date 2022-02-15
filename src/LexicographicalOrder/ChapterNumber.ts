@@ -1,36 +1,13 @@
 import romans from "romans";
-
-export enum ChapterNumberStyle {
-  Arabic,
-  Roman,
-}
-
-export function isRomanNumber(num: string): boolean {
-  if (!num || num === "") {
-    return false;
-  }
-  for (let i = 0; i < num.length; i++) {
-    if (
-      num[i] !== "C" &&
-      num[i] !== "D" &&
-      num[i] !== "I" &&
-      num[i] !== "L" &&
-      num[i] !== "M" &&
-      num[i] !== "V" &&
-      num[i] !== "X"
-    ) {
-      return false;
-    }
-  }
-  return true;
-}
+import { NumberStyle } from "../types";
+import isRomanNumber from "./isRomanNumber";
 
 interface ChapterNumberLevel {
   val: number;
-  style: ChapterNumberStyle;
+  style: NumberStyle;
 }
 
-export class ChapterNumber {
+class ChapterNumber {
   private _levels: Array<ChapterNumberLevel>;
   private _separator: string;
   constructor(text?: string) {
@@ -41,8 +18,20 @@ export class ChapterNumber {
     this._separator = ".";
   }
 
-  add(style?: ChapterNumberStyle): ChapterNumber {
-    this._levels.push({ val: 1, style: style || ChapterNumberStyle.Arabic });
+  add(): ChapterNumber;
+  add(style: NumberStyle): ChapterNumber;
+  add(start: number): ChapterNumber;
+  add(style: NumberStyle, start: number): ChapterNumber;
+  add(style?: NumberStyle | number, start?: number): ChapterNumber {
+    if (typeof style === 'string' && typeof start === 'number') {
+      this._levels.push({ val: start, style: style });
+    } else if (!style && !start) {
+      this._levels.push({ val: 1, style: NumberStyle.Arabic });
+    } else if (typeof style === "number" && !start) {
+      this._levels.push({ val: style, style: NumberStyle.Arabic });
+    } else if (typeof style === "string") {
+      this._levels.push({ val: 1, style: style });
+    }
     return this;
   }
 
@@ -74,12 +63,12 @@ export class ChapterNumber {
         if (isRomanNumber(level)) {
           this._levels.push({
             val: romans.deromanize(level),
-            style: ChapterNumberStyle.Roman,
+            style: NumberStyle.Roman,
           });
         } else {
           this._levels.push({
             val: parseInt(level),
-            style: ChapterNumberStyle.Arabic,
+            style: NumberStyle.Arabic,
           });
         }
       }
@@ -91,9 +80,7 @@ export class ChapterNumber {
     if (this._levels.length > 0) {
       this._levels[this._levels.length - 1].val =
         this._levels[this._levels.length - 1].val - count;
-      if (
-        this._levels[this._levels.length - 1].style === ChapterNumberStyle.Roman
-      ) {
+      if (this._levels[this._levels.length - 1].style === NumberStyle.Roman) {
         if (this._levels[this._levels.length - 1].val < 1) {
           this._levels[this._levels.length - 1].val = this._levels[
             this._levels.length - 1
@@ -145,8 +132,10 @@ export class ChapterNumber {
       if (index > 0) {
         t += ".";
       }
-      if (level.style === ChapterNumberStyle.Roman) {
+      if (level.style === NumberStyle.Roman) {
         t += romans.romanize(level.val);
+      } else if (level.style === NumberStyle.RomanLowerCase) {
+        t += romans.romanize(level.val).toLowerCase();
       } else {
         let fl = digits - level.val.toString().length;
         if (fl < 0) {
@@ -162,3 +151,5 @@ export class ChapterNumber {
     return this._levels.length;
   }
 }
+
+export default ChapterNumber;

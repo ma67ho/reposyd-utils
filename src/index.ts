@@ -4,7 +4,7 @@ import ObjectHelper from './ObjectHelper'
 import LexicographicalOrder from './LexicographicalOrder'
 import String from './String'
 import Uuid from './Uuid'
-export default {
+export {
   Array,
   Date,
   ObjectHelper,

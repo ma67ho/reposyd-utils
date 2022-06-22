@@ -1,7 +1,7 @@
-import { Action, ActionPriority, ActionState } from "./types";
+import { IActionProperties, ActionPriority, ActionState } from "./types";
 
 export default {
-  create: (): Action => {
+  create: (): IActionProperties => {
     return {
       workLog: [],
       dateOfCompletion: null,

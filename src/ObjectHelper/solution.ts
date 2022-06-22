@@ -1,7 +1,7 @@
-import { Solution } from "./types";
+import { ISolution } from "./types";
 
 export default {
-  object: (values): Solution => {
+  object: (values): ISolution => {
     values = values || {}
     return {
       name: values.name ||'',

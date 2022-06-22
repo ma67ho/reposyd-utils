@@ -1,7 +1,7 @@
 import Action from "./action";
 import { VCard } from "@covve/easy-vcard";
 import {
-  Contact,
+  IContactProperties,
   ContactActivityLogEntry,
   ContactActivityLogEntryType,
 } from "./types";
@@ -145,7 +145,7 @@ export default {
   },
   export: {
     as: {
-      csv: (data: Array<Contact>): Promise<string> => {
+      csv: (data: Array<IContactProperties>): Promise<string> => {
         return new Promise((resolve, reject) => {
           try {
             const d = [];
@@ -175,7 +175,7 @@ export default {
           }
         });
       },
-      vcard: (data: Contact) => {
+      vcard: (data: IContactProperties) => {
         const vc = new VCard();
         vc.setFullName(data.displayName);
         vc.addFirstName(data.firstName);

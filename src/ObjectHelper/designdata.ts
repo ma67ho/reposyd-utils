@@ -1,14 +1,15 @@
 import {
   AttributeTypes,
-  DesignDataObject,
-  DesignDataObjectDefinition,
+  IDesignDataObject,
+  IDesignDataDefinitionObject,
   Uuid,
+  IDesignDataDefinitionAttributePropertiesEnumeration,
 } from "./types";
 import dayjs from "dayjs";
 
-function objectCreate(values?): DesignDataObject {
+function objectCreate(values?): IDesignDataObject {
   values = values || {};
-  const o: DesignDataObject = {
+  const o: IDesignDataObject = {
     attributes: values.attributes || {},
     cm: values.cm || {},
     id: values.id || null,
@@ -21,14 +22,14 @@ function objectCreate(values?): DesignDataObject {
 
 function readSqlRow(
   result: Array<unknown>,
-  definition: DesignDataObjectDefinition,
+  definition: IDesignDataDefinitionObject,
   start?: number
-): { ddo: DesignDataObject | null; lastRow: number } {
+): { ddo: IDesignDataObject | null; lastRow: number } {
   if (result.length === 0) {
     return { ddo: null, lastRow: -1 };
   }
   const uuid: Uuid = null;
-  const ddo: DesignDataObject = objectCreate({ definition: definition });
+  const ddo: IDesignDataObject = objectCreate({ definition: definition });
   for (
     let rowCount: number = start || 0;
     rowCount < result.length;
@@ -85,7 +86,7 @@ function readSqlRow(
   };
 }
 
-function setValueFromRow(row, ddo: DesignDataObject): void {
+function setValueFromRow(row, ddo: IDesignDataObject): void {
   if (ddo.definition.attributes[row.da_id].type === AttributeTypes.boolean) {
     ddo.attributes[row.da_id] = row.da_value === 1;
   } else if (
@@ -117,9 +118,9 @@ function setValueFromRow(row, ddo: DesignDataObject): void {
         fields: [],
       };
     }
-    const dde = ddo.definition.attributes[
+    const dde = (ddo.definition.attributes[
       row.da_id
-    ].properties.enumeration.find((x) => x.key === v.value);
+    ].properties as IDesignDataDefinitionAttributePropertiesEnumeration).enumeration.find((x) => x.key === v.value);
     if (dde) {
       if (dde.properties.form) {
         dde.properties.form.fields.forEach((field) => {

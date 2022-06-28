@@ -2,6 +2,33 @@ import romans from "romans";
 import { NumberStyle } from "../types";
 import isRomanNumber from "./isRomanNumber";
 
+function compareSectionNumnber(a, b) {
+  if (isNaN(a) && isNaN(b)) {
+    if (a < b) {
+      return -1
+    } else if (a > b) {
+      return 1
+    } else {
+      return 0
+    }
+  } else if (!isNaN(a) && isNaN(b)) {
+    return -1
+  } else if (isNaN(a) && !isNaN(b)) {
+    return 1
+  } else {
+    a = parseInt(a)
+    b = parseInt(b)
+    if (a < b) {
+      return -1
+    } else if (a > b) {
+      return 1
+    } else {
+      return 0
+    }
+  }
+}
+
+
 interface ChapterNumberLevel {
   val: number;
   style: NumberStyle;
@@ -149,6 +176,25 @@ class ChapterNumber {
 
   get levels(): number {
     return this._levels.length;
+  }
+
+  static compare(a: string, b: string, sep?: string): number {
+    const ia = a.split(sep === undefined ? '.' : sep)
+    const ib = b.split(sep === undefined ? '.' : sep)
+    const count = Math.min(ia.length, ib.length)
+    for (let index = 0; index < count; index++) {
+      const r = compareSectionNumnber(ia[index], ib[index])
+      if (r !== 0) {
+        return r
+      }
+    }
+    if (ia.length < ib.length) {
+      return -1
+    } else if (ia.length > ib.length) {
+      return 1
+    } else {
+      return 0
+    }
   }
 }
 

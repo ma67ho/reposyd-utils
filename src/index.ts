@@ -1,5 +1,6 @@
 import Array from './Array'
 import Chapter from './Chapter'
+import DataModel from './DataModel'
 import Date from './Date'
 import ErrorHandling from './ErrorHandling'
 import ObjectHelper from './ObjectHelper'
@@ -9,6 +10,7 @@ import Uuid from './Uuid'
 export {
   Array,
   Chapter,
+  DataModel,
   Date,
   ErrorHandling,
   ObjectHelper,

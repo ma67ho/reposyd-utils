@@ -327,6 +327,17 @@ export type Project = {
   uuid: Uuid;
 };
 
+export interface IChapter {
+  uuid: Uuid
+  number: string
+  title: string
+  description: string
+  // script: {
+  //   uuid: null,
+  //   name: row.sn_script,
+  //   options: row.st_options === null ? defaultOptions : JSON.parse(row.st_options)
+  // }, 
+}
 export interface ISolution {
   name: string;
   uuid: Uuid;

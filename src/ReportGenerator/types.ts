@@ -5,6 +5,11 @@ export interface IChapter {
   number: string
   title: string
   description: string
+  script: {
+    name: string
+    options: any
+    uuid: Uuid
+  }
   // script: {
   //   uuid: null,
   //   name: row.sn_script,

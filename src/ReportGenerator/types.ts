@@ -1,4 +1,4 @@
-import { Uuid } from "../ObjectHelper/types"
+import { DesignDataConfigurationManagementData, Uuid } from "../ObjectHelper/types"
 
 export interface IChapter {
   uuid: Uuid
@@ -9,7 +9,8 @@ export interface IChapter {
     name: string
     options: any
     uuid: Uuid
-  }
+  },
+  cm: DesignDataConfigurationManagementData
   // script: {
   //   uuid: null,
   //   name: row.sn_script,

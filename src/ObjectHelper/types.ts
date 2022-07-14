@@ -292,7 +292,9 @@ export interface IDesignDataObject {
 export interface IDocument {
   category: DocumentCategory;
   documentNumber: string;
-  properties: IDocumentProperties
+  keywords: string | string[];
+  lang: string;
+  properties: IDocumentProperties;
   publicationDate: Date;
   revisionNumber: string;
   template: Uuid | null;
@@ -301,7 +303,7 @@ export interface IDocument {
   dsuuid: Uuid | null;
 }
 
-export type IDocumentProperties = Record<string,any>
+export type IDocumentProperties = Record<string, any>;
 
 export enum DocumentCategory {
   REPORT = "report",
@@ -328,15 +330,15 @@ export type Project = {
 };
 
 export interface IChapter {
-  uuid: Uuid
-  number: string
-  title: string
-  description: string
+  uuid: Uuid;
+  number: string;
+  title: string;
+  description: string;
   // script: {
   //   uuid: null,
   //   name: row.sn_script,
   //   options: row.st_options === null ? defaultOptions : JSON.parse(row.st_options)
-  // }, 
+  // },
 }
 export interface ISolution {
   name: string;
@@ -355,17 +357,16 @@ export interface IDesignDataExport {
 }
 
 export interface IRequirementsTraceabilityMatrix {
-  traceObjects: IDesignDataObject[],
-  rows: IRequirementsTraceabilityMatrixRow[],
+  traceObjects: IDesignDataObject[];
+  rows: IRequirementsTraceabilityMatrixRow[];
 }
 
 export interface IRequirementsTraceabilityMatrixRow {
-  rt: IDesignDataObject,
-  traces: IRequirementsTraceabilityMatrixTrace[]
+  rt: IDesignDataObject;
+  traces: IRequirementsTraceabilityMatrixTrace[];
 }
 
 export interface IRequirementsTraceabilityMatrixTrace {
-  ddl: IDesignDataLink,
-  ddo: IDesignDataObject
+  ddl: IDesignDataLink;
+  ddo: IDesignDataObject;
 }
-  

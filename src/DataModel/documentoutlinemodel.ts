@@ -2,10 +2,11 @@ import { IChapter } from "../ReportGenerator/types";
 import ChapterNumber from "../LexicographicalOrder/chapternumber"
 import Chapter from "../Chapter";
 import { Uuid } from "../ObjectHelper/types";
+import shasum from 'shasum-object'
 
 export enum DocumentOutlineNodeStatus {
   UNCHANGD = 0x00,
-  ODIFIED = 0x01,
+  MODIFIED = 0x01,
   ADDED = 0x02,
   REMOVED = 0x04
 }
@@ -61,12 +62,15 @@ class DocumentOutlineNode {
   private _children: DocumentOutlineNode[]
   private _model: DocumentOutlineModel
   private _parent: Uuid
-
+  private _shasum: string
+  private _status: DocumentOutlineNodeStatus
   constructor(model: DocumentOutlineModel, chapter: IChapter, parent?: Uuid) {
     this._chapter = chapter
     this._children = []
     this._model = model
     this._parent = parent
+    this._shasum = shasum(this._chapter)
+    this._status = DocumentOutlineNodeStatus.UNCHANGD
     if (this._parent) {
       const p = this._model.nodeByKey(this._parent)
       if (p) {
@@ -103,7 +107,7 @@ class DocumentOutlineNode {
       c.remove()
     }
     const p = this._model.nodeByKey(this._parent)
-    if (p){
+    if (p) {
       p.take(this._chapter.uuid)
     }
     this._model.removeNode(this)
@@ -115,7 +119,7 @@ class DocumentOutlineNode {
     const cn = new ChapterNumber(start || '1')
     this._chapter.number = cn.toString()
     cn.add()
-    for (let i = 0; i < this._children.length; i++){
+    for (let i = 0; i < this._children.length; i++) {
       this._children[i].renumber(cn.toString())
       cn.inc()
     }
@@ -138,6 +142,14 @@ class DocumentOutlineNode {
     const n = this._children.splice(idx, 1)[0]
     n._parent = null
     return n
+  }
+
+  update(chapter: IChapter){
+    if (chapter.uuid === this._chapter.uuid){
+      this._chapter = chapter
+      this._shasum = shasum(this._chapter)
+      this._status = DocumentOutlineNodeStatus.UNCHANGD
+    }
   }
 
   get hasCildren(): boolean {
@@ -163,6 +175,14 @@ class DocumentOutlineNode {
     return this._chapter
   }
   set chapter(val: IChapter) {
+    console.log('set', this._shasum, shasum(val))
+    if (this._status !== DocumentOutlineNodeStatus.ADDED){
+      if (this._shasum !== shasum(val)) {
+        this._status = DocumentOutlineNodeStatus.MODIFIED
+      } else {
+        this._status = DocumentOutlineNodeStatus.UNCHANGD
+      }
+    }
     this._chapter = val
   }
 
@@ -184,14 +204,23 @@ class DocumentOutlineNode {
   get parent(): Uuid {
     return this._parent
   }
+
+  get status(): DocumentOutlineNodeStatus {
+    return this._status
+  }
+  set status(v: DocumentOutlineNodeStatus) {
+    this._status = v
+  }
 }
 
 class DocumentOutlineModel {
   private _chapters: IChapter[]
+  private _eventHandler: Record<string,any[]>
   private _nodes: DocumentOutlineNode[]
   private _removedNodes: DocumentOutlineNode[]
   constructor(chapters) {
     this._chapters = []
+    this._eventHandler = {}
     this._nodes = []
     this._removedNodes = []
     if (chapters) {
@@ -221,12 +250,30 @@ class DocumentOutlineModel {
       cn.inc()
     }
     c.number = cn.toString()
-    new DocumentOutlineNode(this, c, p ? p.key : undefined)
+    const n = new DocumentOutlineNode(this, c, p ? p.key : undefined)
+    n.status = DocumentOutlineNodeStatus.ADDED
+    this.callEventHandler('modified', this)
     return c
   }
 
   appendNode(node: DocumentOutlineNode) {
     this._nodes.push(node)
+  }
+
+  get modifiedChapters(): IChapter[] {
+    const l = []
+    function check(node: DocumentOutlineNode){
+      if (node.status === DocumentOutlineNodeStatus.ADDED || node.status === DocumentOutlineNodeStatus.MODIFIED){
+        l.push(node.chapter)
+      }
+      for(let i = 0; i < node.children.length; i++){
+        check(node.children[i])
+      }
+    }
+    for (let i = 0; i < this._nodes.length; i++){
+      check(this._nodes[i])
+    }
+    return l
   }
 
   nodeByChapterNumber(number: string): DocumentOutlineNode {
@@ -275,20 +322,27 @@ class DocumentOutlineModel {
     return null
   }
 
+  on(event: string, callback: any){
+    if (!this._eventHandler[event]){
+      this._eventHandler[event] = []
+    }
+    this._eventHandler[event].push(callback)
+  }
+
   read(chapters): void {
     this.buildModel(chapters)
   }
 
   removeNode(node: DocumentOutlineNode): void {
     const idx = this._chapters.findIndex(x => x.uuid === node.key)
-    if (idx === -1){
+    if (idx === -1) {
       return
     }
     this._chapters.splice(idx, 1)
     const p = this.nodeByKey(node.parent)
     if (p) {
-    //   const c = node.take(node.key)
-    //   this._removedNodes.push(c)
+      //   const c = node.take(node.key)
+      //   this._removedNodes.push(c)
     } else {
       const idx = this._nodes.findIndex(x => x.key === node.key)
       this._removedNodes.push(node)
@@ -324,10 +378,10 @@ class DocumentOutlineModel {
 
   renumber(start?: string) {
     const cn = new ChapterNumber(start || '1')
-    for (let i = 0; i < this._nodes.length; i++){
+    for (let i = 0; i < this._nodes.length; i++) {
       this._nodes[i].renumber(cn.toString())
       cn.inc()
-    }  
+    }
   }
 
   sort(): void {
@@ -338,8 +392,42 @@ class DocumentOutlineModel {
     this._nodes.sort((a, b) => ChapterNumber.compare(a.chapter.number, b.chapter.number))
   }
 
+  update(chapter: IChapter){
+    const n = this.nodeByKey(chapter.uuid)
+    if (n){
+      n.update(chapter)
+    }
+  }
+
+  get isModified(): boolean {
+    function follow(node){
+      if (node.status !== DocumentOutlineNodeStatus.UNCHANGD){
+        return true
+      }
+      for (let i = 0; i < node.children.length; i++){
+        if (follow(node.children[i])){
+          return true
+        }
+      }
+      return false
+    }
+    for (let i = 0; i < this._nodes.length; i++){
+      if(follow(this._nodes[i])){
+        return true
+      }
+    }
+    return false
+  }
+
   get nodes() {
     return this._nodes
+  }
+
+  private callEventHandler(event: string, props?: any) {
+    const callbacks = this._eventHandler[event] || []
+    for (let i = 0; i < callbacks.length; i++){
+      callbacks[i](props)
+    }
   }
 
 }

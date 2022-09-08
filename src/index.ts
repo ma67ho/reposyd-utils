@@ -3,6 +3,7 @@ import Chapter from './Chapter'
 import * as Convert from './Convert'
 import DataModel from './DataModel'
 import Date from './Date'
+import Document from './Document'
 import ErrorHandling from './ErrorHandling'
 import ObjectHelper from './ObjectHelper'
 import LexicographicalOrder from './LexicographicalOrder'
@@ -14,6 +15,7 @@ export {
   Convert,
   DataModel,
   Date,
+  Document,
   ErrorHandling,
   ObjectHelper,
   LexicographicalOrder,

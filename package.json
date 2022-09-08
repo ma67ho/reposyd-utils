@@ -36,6 +36,7 @@
     "date-fns-tz": "^1.2.2",
     "dayjs": "^1.10.7",
     "jsonexport": "^3.2.0",
+    "node-htmldiff": "^0.9.3",
     "romans": "^2.0.3",
     "shasum-object": "^1.0.0",
     "uuid": "^8.3.2"

@@ -2483,6 +2483,11 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
+node-htmldiff@^0.9.3:
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/node-htmldiff/-/node-htmldiff-0.9.3.tgz#020704e381597e5e449a4708996edf23eebb7fcc"
+  integrity sha512-9n4pd+x4qL6zsq5tntW5Bscn4j+oo0qt0RiLsf88knFjkZkPKj1VFGUBRRHVUUBCE7d64VMluj0LjxfJlJ3hpw==
+
 nopt@~3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-3.0.6.tgz#c6465dbf08abcd4db359317f79ac68a646b28ff9"

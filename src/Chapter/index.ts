@@ -19,7 +19,14 @@ export default {
         uuid: null
       },
       title: '',
-      uuid: Uuid.generate()
+      uuid: Uuid.generate(),
+      cm: {
+        modifiedby: null,
+        owner: null,
+        revision: null,
+        shared: null,
+        timestamp: null
+      }
     }
 
     return c

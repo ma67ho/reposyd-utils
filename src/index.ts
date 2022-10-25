@@ -7,6 +7,7 @@ import Document from './Document'
 import ErrorHandling from './ErrorHandling'
 import ObjectHelper from './ObjectHelper'
 import LexicographicalOrder from './LexicographicalOrder'
+import * as Scripting from './Scripting'
 import String from './String'
 import Uuid from './Uuid'
 export {
@@ -19,6 +20,7 @@ export {
   ErrorHandling,
   ObjectHelper,
   LexicographicalOrder,
+  Scripting,
   String,
   Uuid
 }

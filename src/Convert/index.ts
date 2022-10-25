@@ -1,3 +1,5 @@
+export {calc} from "./calc";
+
 export enum Units {
   ANY = "*",
   CM = "cm",
@@ -349,3 +351,71 @@ export {
   twip2pt,
   unit,
 };
+
+export interface ICustomPaperSize {
+  height: string;
+  width: string;
+}
+
+export interface IMargins {
+  bottom: string;
+  left: string;
+  right: string;
+  top: string;
+}
+
+export enum PaperSize {
+  A3 = "a3",
+  A4 = "a4",
+  A5 = "a5",
+  ANSIA = 'ansia',
+  ANSIB = 'ansib',
+  LEGAL = 'legal',
+  LETTER = 'letter',
+  CUSTOM = "custom",
+}
+
+export enum PageOrientation {
+  LANDSCAPE = "landscape",
+  PORTRAIT = "portrait",
+}
+
+export interface IPageFormat {
+  paperSize: PaperSize;
+  orientation: PageOrientation;
+  customSize: ICustomPaperSize;
+  margins: IMargins;
+}
+
+export function paperSize(format: IPageFormat): ICustomPaperSize {
+  const o = {
+    height: '0mm',
+    width: '0mm'
+  } as ICustomPaperSize;
+  if (format.paperSize === PaperSize.A3) {
+    o.height = format.orientation === PageOrientation.PORTRAIT ? "420mm" : "297mm";
+    o.width = format.orientation === PageOrientation.PORTRAIT ? "297mm" : "420mm";
+  } else if (format.paperSize === PaperSize.A4) {
+    o.height = format.orientation === PageOrientation.PORTRAIT ? "297mm" : "210mm";
+    o.width = format.orientation === PageOrientation.PORTRAIT ? "210mm" : "297mm";
+  } else if (format.paperSize === PaperSize.A5) {
+    o.height = format.orientation === PageOrientation.PORTRAIT ? "210mm" : "148mm";
+    o.width = format.orientation === PageOrientation.PORTRAIT ? "148mm" : "210mm";
+  } else if (format.paperSize === PaperSize.ANSIA) {
+    o.height = format.orientation === PageOrientation.PORTRAIT ? "216mm" : "279mm";
+    o.width = format.orientation === PageOrientation.PORTRAIT ? "279mm" : "216mm";
+  } else if (format.paperSize === PaperSize.ANSIB) {
+    o.height = format.orientation === PageOrientation.PORTRAIT ? "279mm" : "453mm";
+    o.width = format.orientation === PageOrientation.PORTRAIT ? "453mm" : "279mm";
+  } else if (format.paperSize === PaperSize.LEGAL) {
+    o.height = format.orientation === PageOrientation.PORTRAIT ? "216mm" : "356mm";
+    o.width = format.orientation === PageOrientation.PORTRAIT ? "356mm" : "216mm";
+  } else if (format.paperSize === PaperSize.LETTER) {
+    o.height = format.orientation === PageOrientation.PORTRAIT ? "216mm" : "279mm";
+    o.width = format.orientation === PageOrientation.PORTRAIT ? "279mm" : "216mm";
+  } else if (format.paperSize === PaperSize.CUSTOM) {
+    o.height = format.customSize.height;
+    o.width = format.customSize.width;
+  }
+  return o;
+}

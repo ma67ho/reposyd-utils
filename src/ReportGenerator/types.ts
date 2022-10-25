@@ -5,8 +5,9 @@ export interface IChapter {
   number: string
   title: string
   description: string
+  options: Record<string,string>
   script: {
-    name: string
+    id: string
     options: any
     uuid: Uuid
   },

@@ -6,16 +6,10 @@ export default {
     const c: IChapter = {
       description: '',
       number: '',
+      options: {},
       script: {
-        name: null,
-        options: {
-          reportblock: {},
-          section: {
-            pageBreak: false
-          },
-          uuid: null
-        },
-
+        id: null,
+        options: [],
         uuid: null
       },
       title: '',

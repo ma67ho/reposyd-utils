@@ -2,7 +2,8 @@
   "compilerOptions": {
     "rootDir": "src",
     // "declaration": true,
-    "target": "es5",
+    "lib": ["ES2021"],
+    "target": "ES6",
     "module": "commonjs",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

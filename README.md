@@ -8,8 +8,6 @@
 
 RePoSyD Blockly is part of RePoSyD and provides the helper classes and methods for RePoSyD.
 
-![RePoSyD Blockly](./doc/reposyd-blockly.png)
-
 ## Installation
 
 

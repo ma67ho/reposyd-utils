@@ -11,7 +11,7 @@ export function calc(formula: string, unit: Units, options?: ICalcOptions): numb
   const opts = options || {} as ICalcOptions;
   const regex = /(\d+.\d+|\d+)(cm|hpt|mm|pt|px|rem|twip|%)/g;
   const b = opts.base ? convert(opts.base, unit) : 0;
-  let f = formula.toLocaleLowerCase();
+  let f = formula.toLowerCase();
   // sanintize formula: replace constants and adjust units
   Object.keys(opts.constants).forEach(key => {
     f = f.replaceAll(key, opts.constants[key]);

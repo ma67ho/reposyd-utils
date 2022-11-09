@@ -914,7 +914,7 @@ class DocumentOutlineModel {
       return
     }
     n.chapter = chapter
-    if (n.shasum !== shasum(n.chapter)) {
+    if (n._shasum !== shasum(n.chapter)) {
       n.state |= 0x01
     } else {
       n.state &= ~0x01

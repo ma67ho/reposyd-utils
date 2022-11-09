@@ -23,9 +23,9 @@
     "lint:fix": "eslint --fix src/**/*.ts ",
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "tsc": "tsc",
-    "version:major": "yarn version --major",
-    "version:minor": "yarn version --minor",
-    "version:patch": "yarn version --patch",
+    "version:major": "yarn version --major & run-s -s build:dist",
+    "version:minor": "yarn version --minor & run-s -s build:dist",
+    "version:patch": "yarn version --patch & run-s -s build:dist",
     "version:prerelease": "yarn version --prerelease --preid rc"
   },
   "dependencies": {

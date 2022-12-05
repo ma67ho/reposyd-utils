@@ -1,11 +1,59 @@
 // import { LexicographicalOrder.ChapterNumber,ChapterNumberStyle, isRomanNumber } from '../src/LexicographicalOrder/LexicographicalOrder.ChapterNumber'
-import {LexicographicalOrder } from '../src'
+import { LexicographicalOrder } from '../src'
 import { expect } from 'chai';
 import { NumberStyle } from '../src/types';
 
 
-describe('Module LexicographicalOrder', () => { 
-  describe('ChatperNumber', () => {
+describe('Module LexicographicalOrder', () => {
+  describe('NumberFactory', () => {
+    it ('chapnum(1.1,2) -> 01.01', function(){
+      expect(LexicographicalOrder.NumberFactory.build('chapnum(1.1,2)')).to.equal('01.01')
+    })
+    it('{chapter.number} = 1.2.3', function () {
+      expect(LexicographicalOrder.NumberFactory.build('{chapter.number}', { "chapter.number": "1.2.3" })).to.equal('1.2.3')
+    })
+    it('{chapter.number}-{requirements.count} = 1.2.3-1', function () {
+      expect(LexicographicalOrder.NumberFactory.build('{chapter.number}-{requirements.count}', { "chapter.number": "1.2.3", "requirements.count": 1 })).to.equal('1.2.3-1')
+    })
+    it('padEnd(val,length,char)', function () {
+      expect(LexicographicalOrder.NumberFactory.build("padEnd(1,3,0)")).to.be.equal('100')
+    })
+    it('padStart(val,length,char)', function () {
+      expect(LexicographicalOrder.NumberFactory.build("padStart(1,3,0)")).to.be.equal('001')
+    })
+    it("counter(0,1) -> 0", function () {
+      expect(LexicographicalOrder.NumberFactory.build("counter(0,1)")).to.be.equal('0')
+    })
+    it("counter(1,1) -> 1", function () {
+      expect(LexicographicalOrder.NumberFactory.build("counter(1,1)")).to.be.equal('1')
+    })
+    it("counter(1,10) -> 10", function () {
+      expect(LexicographicalOrder.NumberFactory.build("counter(1,10)")).to.be.equal('10')
+    })
+    it("counter(2,10) -> 20", function () {
+      expect(LexicographicalOrder.NumberFactory.build("counter(2,10)")).to.be.equal('20')
+    })
+    it('chapnum({chapter.number},2) -> 01.02.03', function () {
+      expect(LexicographicalOrder.NumberFactory.build('chapnum({chapter.number},2)', { "chapter.number": "1.2.3" })).to.equal('01.02.03')
+    })
+    // it("RePoSyD-{chapter.number}-padStart(1,3,0)", function () {
+    //   expect(LexicographicalOrder.NumberFactory.build("RePoSyD-{chapter.number}-padStart(1,3,0)", { "chapter.number": "1.2.3" })).to.be.equal('RePoSyD-1.2.3-001')
+    // })
+    it('SYS-chapnum({chapter.number},2)-counter({requirements.count},10)', function () {
+      expect(LexicographicalOrder.NumberFactory.build("SYS-chapnum({chapter.number},2)-counter({requirements.count},10)", {
+        "chapter.number": "1.2.3",
+        "requirements.count": 1
+      })).to.be.equal('SYS-01.02.03-10')
+    })
+    it("SYS-chapnum({chapter.number},2)-counter({requirements.count},10,3,'0')", function () {
+      expect(LexicographicalOrder.NumberFactory.build("SYS-chapnum({chapter.number},2)-counter({requirements.count},10,3,'0')", {
+        "chapter.number": "1.2.3",
+        "requirements.count": 1
+      })).to.be.equal('SYS-01.02.03-010')
+    })
+  })
+
+  describe('ChapterNumber', () => {
     it('isRomanNumber', () => {
       expect(LexicographicalOrder.isRomanNumber('')).to.be.false
       expect(LexicographicalOrder.isRomanNumber('A')).to.be.false

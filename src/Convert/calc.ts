@@ -14,8 +14,9 @@ export function calc(formula: string, unit: Units, options?: ICalcOptions): numb
   let f = formula.toLowerCase();
   // sanintize formula: replace constants and adjust units
   Object.keys(opts.constants).forEach(key => {
-    f = f.replaceAll(key, opts.constants[key]);
-  });
+    const cregex = new RegExp(key, 'g')
+    f = f.replace(cregex, opts.constants[key]);
+});
   let m;
   while ((m = regex.exec(f)) !== null) {
     if (m.index === regex.lastIndex) {

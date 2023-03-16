@@ -16,10 +16,10 @@ describe('Module LexicographicalOrder', () => {
       expect(LexicographicalOrder.NumberFactory.build('{chapter.number}-{requirements.count}', { "chapter.number": "1.2.3", "requirements.count": 1 })).to.equal('1.2.3-1')
     })
     it('padEnd(val,length,char)', function () {
-      expect(LexicographicalOrder.NumberFactory.build("padEnd(1,3,0)")).to.be.equal('100')
+      expect(LexicographicalOrder.NumberFactory.build("padEnd(1,3,'0')")).to.be.equal('100')
     })
     it('padStart(val,length,char)', function () {
-      expect(LexicographicalOrder.NumberFactory.build("padStart(1,3,0)")).to.be.equal('001')
+      expect(LexicographicalOrder.NumberFactory.build("padStart(1,3,'0')")).to.be.equal('001')
     })
     it("counter(0,1) -> 0", function () {
       expect(LexicographicalOrder.NumberFactory.build("counter(0,1)")).to.be.equal('0')
@@ -50,6 +50,9 @@ describe('Module LexicographicalOrder', () => {
         "chapter.number": "1.2.3",
         "requirements.count": 1
       })).to.be.equal('SYS-01.02.03-010')
+    })
+    it('val', function() {
+      expect(LexicographicalOrder.NumberFactory.build('{val}', { val: '42'})).to.be.equal('42')
     })
   })
 

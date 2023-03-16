@@ -1,6 +1,7 @@
 import Array from './Array'
 import Chapter from './Chapter'
 import * as Convert from './Convert'
+import DataImport from './DataImport'
 import DataModel from './DataModel'
 import Date from './Date'
 import Document from './Document'
@@ -14,6 +15,7 @@ export {
   Array,
   Chapter,
   Convert,
+  DataImport,
   DataModel,
   Date,
   Document,

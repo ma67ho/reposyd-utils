@@ -23,8 +23,8 @@ export default class NumberBuilder {
       repl: /\{(.*?)\}/g,
       counter: /counter[(](.*),(.*),(.*),'(.*)'[)]|counter[(](.*),(.*)[)]/g,
       chapnum: /chapnum[(](.*),(.*)[)]/g,
-      padEnd: /padEnd\((.*),(\d*),(.*)\)/g,
-      padStart: /padStart\((.*),(\d*),(.*)\)/g,
+      padEnd: /padEnd\((.*),(\d*),'(.*)'\)/g,
+      padStart: /padStart\((.*),(\d*),'(.*)'\)/g,
     }
 
     let m;

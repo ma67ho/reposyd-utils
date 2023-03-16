@@ -2,3 +2,5 @@ dist
 node_modules
 
 attic
+# VS Code Counter
+.VSCodeCounter

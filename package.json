@@ -1,6 +1,6 @@
 {
   "name": "@reposyd/utils",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "RePoSyD Utility Modules for @reposyd/core and @reposyd/app",
   "main": "dist/index.js",
   "exports": {

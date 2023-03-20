@@ -8,7 +8,7 @@ export interface ICheckDataError {
 }
 
 export function checkEnumValue(attr, value){
-  return attr.properties.enumeration.some(x => x.key === value || Object.values(x.value).includes(value))
+  return attr.properties.enumeration.some(x => x.key === value.toLowerCase() || Object.values(x.value).map(x => String(x).toLowerCase()).includes(value.toLowerCase()))
 }
 
 export default function (row: any, mappings: any, columns: any): ICheckDataError[] {

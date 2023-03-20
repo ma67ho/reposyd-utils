@@ -7,6 +7,10 @@ export interface ICheckDataError {
   error: TCheckDataError
 }
 
+export function checkEnumValue(attr, value){
+  return attr.properties.enumeration.some(x => x.key === value || Object.values(x.value).includes(value))
+}
+
 export default function (row: any, mappings: any, columns: any): ICheckDataError[] {
   const errors = []
   for (const mapping of mappings){
@@ -19,7 +23,7 @@ export default function (row: any, mappings: any, columns: any): ICheckDataError
         const value = row[column.value]
         // console.log(value, mapping.value,'column:', column)
         if (mapping.attr.type === 'enumeration' && value !== undefined){
-          if (mapping.attr.properties.enumeration.find(x => x.key === value) === undefined){
+          if (!checkEnumValue(mapping.attr, value)){
             errors.push({
               column: column,
               error: TCheckDataError.ENUMERATIONERROR

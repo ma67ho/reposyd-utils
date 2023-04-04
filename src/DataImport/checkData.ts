@@ -8,6 +8,7 @@ export interface ICheckDataError {
 }
 
 export function checkEnumValue(attr, value){
+  console.log(attr, value, attr.properties.enumeration.some(x => x.key === value.toLowerCase() || Object.values(x.value).map(x => String(x).toLowerCase()).includes(value.toLowerCase())))
   return attr.properties.enumeration.some(x => x.key === value.toLowerCase() || Object.values(x.value).map(x => String(x).toLowerCase()).includes(value.toLowerCase()))
 }
 
@@ -18,10 +19,10 @@ export default function (row: any, mappings: any, columns: any): ICheckDataError
       const column = columns.find(x => x.label === mapping.value)
       if (column === undefined){
         // TODO error handling
-        // console.log(mapping.value, columns)
+        console.warn('column not found', mapping.value, columns)
       } else {
         const value = row[column.value]
-        // console.log(value, mapping.value,'column:', column)
+        console.log('h', value, mapping.value,'column:', column)
         if (mapping.attr.type === 'enumeration' && value !== undefined){
           if (!checkEnumValue(mapping.attr, value)){
             errors.push({

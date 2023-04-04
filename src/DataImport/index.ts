@@ -28,8 +28,10 @@ function plainText2html(text: string): string {
 }
 
 import checkData from './checkData'
+import Rules from './Rules'
 export default {
   checkData,
   mapColumns,
-  plainText2html
+  plainText2html,
+  Rules
 }

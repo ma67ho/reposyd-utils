@@ -39,10 +39,10 @@ class ChapterNumber {
   private _separator: string;
   constructor(text?: string) {
     this._levels = [];
+    this._separator = ".";
     if (text) {
       this.parse(text);
     }
-    this._separator = ".";
   }
 
   add(): ChapterNumber;
@@ -85,7 +85,8 @@ class ChapterNumber {
 
   private parse(number) {
     this._levels = [];
-    number.split(".").forEach((level) => {
+    const items = number.split(this._separator)
+    items.forEach((level) => {
       if (level.trim()) {
         if (isRomanNumber(level)) {
           this._levels.push({
@@ -93,10 +94,19 @@ class ChapterNumber {
             style: NumberStyle.Roman,
           });
         } else {
-          this._levels.push({
-            val: parseInt(level),
-            style: NumberStyle.Arabic,
-          });
+          const v = parseInt(level)
+          if (Number.isNaN(v)) {
+            this._levels.push({
+              val: level,
+              style: NumberStyle.NaN,
+            });
+
+          } else {
+            this._levels.push({
+              val: parseInt(level),
+              style: NumberStyle.Arabic,
+            });
+          }
         }
       }
     });
@@ -105,7 +115,8 @@ class ChapterNumber {
   dec(count?: number): ChapterNumber {
     count = count || 1;
     if (this._levels.length > 0) {
-      this._levels[this._levels.length - 1].val =
+      if (this._levels[this._levels.length - 1].style !== NumberStyle.NaN){
+        this._levels[this._levels.length - 1].val =
         this._levels[this._levels.length - 1].val - count;
       if (this._levels[this._levels.length - 1].style === NumberStyle.Roman) {
         if (this._levels[this._levels.length - 1].val < 1) {
@@ -121,14 +132,16 @@ class ChapterNumber {
         }
       }
     }
+    }
     return this;
   }
 
   inc(count?: number): ChapterNumber {
     count = count || 1;
     if (this._levels.length > 0) {
-      this._levels[this._levels.length - 1].val =
-        this._levels[this._levels.length - 1].val + count;
+      if (this._levels[this._levels.length - 1].style !== NumberStyle.NaN){
+      this._levels[this._levels.length - 1].val = this._levels[this._levels.length - 1].val + count;
+      }
     }
     return this;
   }
@@ -159,7 +172,9 @@ class ChapterNumber {
       if (index > 0) {
         t += ".";
       }
-      if (level.style === NumberStyle.Roman) {
+      if (level.style === NumberStyle.NaN) {
+        t += level.val
+      } else if (level.style === NumberStyle.Roman) {
         t += romans.romanize(level.val);
       } else if (level.style === NumberStyle.RomanLowerCase) {
         t += romans.romanize(level.val).toLowerCase();

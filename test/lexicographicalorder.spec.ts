@@ -6,7 +6,7 @@ import { NumberStyle } from '../src/types';
 
 describe('Module LexicographicalOrder', () => {
   describe('NumberFactory', () => {
-    it ('chapnum(1.1,2) -> 01.01', function(){
+    it('chapnum(1.1,2) -> 01.01', function () {
       expect(LexicographicalOrder.NumberFactory.build('chapnum(1.1,2)')).to.equal('01.01')
     })
     it('{chapter.number} = 1.2.3', function () {
@@ -55,9 +55,9 @@ describe('Module LexicographicalOrder', () => {
         "requirements.count": 1
       })).to.be.equal('SYS-01.02.03-010')
     })
-    it('val', function() {
-      expect(LexicographicalOrder.NumberFactory.build('{}', { })).to.be.equal('???')
-      expect(LexicographicalOrder.NumberFactory.build('{val}', { val: '42'})).to.be.equal('42')
+    it('val', function () {
+      expect(LexicographicalOrder.NumberFactory.build('{}', {})).to.be.equal('???')
+      expect(LexicographicalOrder.NumberFactory.build('{val}', { val: '42' })).to.be.equal('42')
     })
   })
 
@@ -90,6 +90,11 @@ describe('Module LexicographicalOrder', () => {
       expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
       expect(cn.levels).to.equal(1)
       expect(cn.toString()).to.equal('I')
+    })
+    it("construct LexicographicalOrder.ChapterNumber('SYS-REQ-10')", function () {
+      const cn = new LexicographicalOrder.ChapterNumber('SYS-REQ-10')
+      expect(cn.levels).to.equal(1)
+      expect(cn.toString()).to.equal('SYS-REQ-10')
     })
     it("add()", () => {
       const cn = new LexicographicalOrder.ChapterNumber('1')
@@ -140,9 +145,12 @@ describe('Module LexicographicalOrder', () => {
       expect(cn.toString()).to.equal('1.x')
     })
     it("inc()", () => {
-      const cn = new LexicographicalOrder.ChapterNumber('1')
+      let cn = new LexicographicalOrder.ChapterNumber('1')
       cn.inc()
       expect(cn.toString()).to.equal('2')
+      cn = new LexicographicalOrder.ChapterNumber('SYS-REQ-10')
+      cn.inc()
+      expect(cn.toString()).to.equal('SYS-REQ-10')
     })
     it("inc(2)", () => {
       const cn = new LexicographicalOrder.ChapterNumber('1')
@@ -160,6 +168,9 @@ describe('Module LexicographicalOrder', () => {
       expect(cn.toString()).to.equal('I')
       cn.dec()
       expect(cn.toString()).to.equal('I')
+      cn = new LexicographicalOrder.ChapterNumber('SYS-REQ-10')
+      cn.dec()
+      expect(cn.toString()).to.equal('SYS-REQ-10')
     })
     it("dec(2)", () => {
       const cn = new LexicographicalOrder.ChapterNumber('3')

@@ -1,5 +1,4 @@
-import ChapterNumber from "./chapternumber"
-import dot from 'dot-wild'
+import ChapterNumber from "./ChapterNumber"
 
 export default class NumberBuilder {
   private _values: Record<string, unknown>

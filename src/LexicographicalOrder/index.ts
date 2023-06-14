@@ -1,5 +1,5 @@
 import NumberFactory from "./NumberFactory"
-import ChapterNumber from "./chapternumber";
+import ChapterNumber from "./ChapterNumber";
 import isRomanNumber from "./isRomanNumber";
 
 export default {

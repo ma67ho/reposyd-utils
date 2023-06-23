@@ -1,4 +1,4 @@
-import { AutoFilter, ColumnFilter, ColumnFilterCondition, FilterOperator, FilterType, IAutoFilter, IColumnFilterCondition, ITextFilter, TextFilter } from "./ColumnFilter"
+import { AutoFilter, ColumnFilter, ColumnFilterCondition, FilterOperator, FilterType, IAutoFilter, IColumnFilterCondition, INumberFilter, ITextFilter, NumberFilter, TextFilter } from "./ColumnFilter"
 
 
 export interface ITableColumn {
@@ -37,12 +37,51 @@ class TableColumnFilter {
       this._filters.push(f)
       this.notify('add', f)
     } else {
-      if (f.type === FilterType.Auto) {
+      if (f.type === FilterType.AUTO) {
         f.conditions[0].value = value || null
         this.notify('update', f)
       }
     }
     return f
+  }
+
+  customFilter(type: FilterType, name: string, operator: FilterOperator, conditions: IColumnFilterCondition[]): ColumnFilter
+  customFilter(type: FilterType, name: string, value: unknown | unknown[] | FilterOperator, conditions?: IColumnFilterCondition[]): ColumnFilter {
+    let f = this._filters.find(x => x.name === name) as ColumnFilter
+    if (f === undefined) {
+      if (type === FilterType.AUTO) {
+        f = new AutoFilter(name, value as unknown[])
+      } else if (type === FilterType.NUMBER) {
+        f = new NumberFilter(name, value as FilterOperator, conditions)
+      } else if (type === FilterType.TEXT) {
+        f = new TextFilter(name, value as FilterOperator, conditions)
+      }
+      this._filters.push(f)
+      this.notify('add', f)
+    } else {
+      if (f.type === type) {
+        if (f.type === FilterType.AUTO) {
+          f.conditions[0].value = value || null
+        } else {
+          f.conditions = conditions.map(c => new ColumnFilterCondition(c.operator, c.value))
+        }
+        this.notify('update', f)
+      } else {
+        const idx = this._filters.findIndex(x => x.name === name)
+        let f
+        if (type === FilterType.AUTO) {
+          f = new AutoFilter(name, value as unknown[])
+        } else if (type === FilterType.NUMBER) {
+          f = new NumberFilter(name, value as FilterOperator, conditions)
+        } else if (type === FilterType.TEXT) {
+          f = new TextFilter(name, value as FilterOperator, conditions)
+        }
+        this._filters[idx] = f
+        this.notify('change', f)
+      }
+    }
+    return f
+
   }
 
   private notify(event, data?) {
@@ -52,7 +91,7 @@ class TableColumnFilter {
   }
 
   filter(name): ColumnFilter {
-    return this._filters.find(x => x.name === name)
+    return this._filters.find(x => x !== undefined && x.name === name)
   }
 
   on(event, cb) {
@@ -79,7 +118,7 @@ class TableColumnFilter {
       if (typeof c.format === 'function') {
         v = c.format(v)
       }
-      return v
+      return v.toString()
     }))]
     return l
   }
@@ -90,7 +129,7 @@ class TableColumnFilter {
       return []
     }
     const f = this._filters.find(x => x.name === colname)
-    if (f === undefined || f.type !== FilterType.Auto) {
+    if (f === undefined || f.type !== FilterType.AUTO) {
       return this.options(colname)
     }
     return (f as AutoFilter).value
@@ -118,7 +157,7 @@ class TableColumnFilter {
       this._filters.push(f)
       this.notify('add', f)
     } else {
-      if (f.type === FilterType.Text) {
+      if (f.type === FilterType.TEXT) {
         f.conditions = conditions.map(c => new ColumnFilterCondition(c.operator, c.value))
         this.notify('update', f)
       }
@@ -213,16 +252,18 @@ class TableColumnFilter {
     return row[this._dataKey as string]
   }
 
-  get(): (IAutoFilter | ITextFilter)[] {
+  get(): (IAutoFilter | INumberFilter | ITextFilter)[] {
     return this._filters.map(x => x.toJSON())
   }
 
   set(filters: (IAutoFilter | ITextFilter)[]) {
     this._filters = filters.map(x => {
       let f
-      if (x.type === FilterType.Auto) {
+      if (x.type === FilterType.AUTO) {
         f = new AutoFilter(x.name, (x as IAutoFilter).value)
-      } else if (x.type === FilterType.Text) {
+      } else if (x.type === FilterType.NUMBER) {
+        f = new NumberFilter(x.name, x.operator, (x as INumberFilter).conditions)
+      } else if (x.type === FilterType.TEXT) {
         f = new TextFilter(x.name, x.operator, (x as ITextFilter).conditions)
       }
       return f

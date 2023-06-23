@@ -17,6 +17,21 @@ describe('TableUtils', function () {
       tf.data = [{ data: { col0: '42' } }]
       expect(tf.options('col0')).to.have.deep.members(['42'])
     })
+    it('customFilter', function () {
+      const tf = new TableUtils.TableFilter([{ field: 'col0', name: 'col0' }, { field: 'col1', name: 'col1' }])
+      tf.customFilter(FilterType.NUMBER, 'col0', FilterOperator.AND, [{ operator: FilterConditionOperator.contains, value: 1 }])
+      expect(tf.filters).to.have.lengthOf(1)
+      expect(tf.filters[0].type).to.be.eql(FilterType.NUMBER)
+      tf.customFilter(FilterType.TEXT, 'col1', FilterOperator.AND, [{ operator: FilterConditionOperator.contains, value: 1 }])
+      expect(tf.filters).to.have.lengthOf(2)
+      expect(tf.filters[1].type).to.be.eql(FilterType.TEXT)
+    })
+
+    it('definition (property', function() {
+      const tf = new TableUtils.TableFilter([{ field: 'col0', name: 'col0' }, { field: 'col1', name: 'col1' }])
+      tf.customFilter(FilterType.NUMBER, 'col0', FilterOperator.AND, [{ operator: FilterConditionOperator.contains, value: 1 }])
+      expect(tf.definition).to.be.an('object')
+    })
   })
   // describe('class TableProxy', function() {
   //   it ('constructor', function() {
@@ -38,7 +53,7 @@ describe('TableUtils', function () {
     it('empty', function () {
       const tf = new TableUtils.TableFilter([{ name: 'col0' }])
       const af = tf.autoFilter('col0', ['01'])
-      expect(af.type).to.be.equal(FilterType.Auto)
+      expect(af.type).to.be.equal(FilterType.AUTO)
       expect(af.operator).to.be.equal(FilterOperator.AND)
       expect(af.conditions).to.be.an('array').and.to.have.lengthOf(2)
       expect(af.conditions[0].operator).to.be.equal(FilterConditionOperator.includes)
@@ -99,7 +114,86 @@ describe('TableUtils', function () {
         expect(tf.match(rows[1])).to.be.true
       })
     })
-    describe('textfilter', function () {
+    describe('number filter', function () {
+      const rows = [
+        {
+          id: 1,
+          number: '01',
+          value: 1
+        },
+        {
+          id: 2,
+          number: '02',
+          value: 2
+        },
+        {
+          id: 3,
+          number: '02.01',
+          value: 0
+        }
+      ]
+
+      it('match equal to', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'value', name: 'value' }])
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.equalTo, value: 1 }])
+        expect(tf.match(rows[0])).to.be.true
+        expect(tf.match(rows[1])).to.be.false
+        expect(tf.match(rows[2])).to.be.false
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.equalTo, value: 0 }])
+        expect(tf.match(rows[2])).to.be.true
+      })
+      it('match not equal to', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'value', name: 'value' }])
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.notEqualTo, value: 1 }])
+        expect(tf.match(rows[0])).to.be.false
+        expect(tf.match(rows[1])).to.be.true
+        expect(tf.match(rows[2])).to.be.true
+      })
+      it('match greater than', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'value', name: 'value' }])
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.greaterThan, value: 1 }])
+        expect(tf.match(rows[0])).to.be.false
+        expect(tf.match(rows[1])).to.be.true
+        expect(tf.match(rows[2])).to.be.false
+      })
+      it('match greater than or equal', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'value', name: 'value' }])
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.greaterThanOrEqual, value: 1 }])
+        expect(tf.match(rows[0])).to.be.true
+        expect(tf.match(rows[1])).to.be.true
+        expect(tf.match(rows[2])).to.be.false
+      })
+      it('match less than', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'value', name: 'value' }])
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.lessThan, value: 1 }])
+        expect(tf.match(rows[0])).to.be.false
+        expect(tf.match(rows[1])).to.be.false
+        expect(tf.match(rows[2])).to.be.true
+      })
+      it('match less than or equal', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'value', name: 'value' }])
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.lessThanOrEqual, value: 1 }])
+        expect(tf.match(rows[0])).to.be.true
+        expect(tf.match(rows[1])).to.be.false
+        expect(tf.match(rows[2])).to.be.true
+      })
+      it('filterRows', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'value', name: 'value' }])
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.equalTo, value: 1 }])
+        expect(tf.filterRows(rows)).to.be.an('array').and.to.have.lengthOf(1)
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.notEqualTo, value: 1 }])
+        expect(tf.filterRows(rows)).to.be.an('array').and.to.have.lengthOf(2)
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.greaterThan, value: 0 }])
+        expect(tf.filterRows(rows)).to.be.an('array').and.to.have.lengthOf(2)
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.greaterThanOrEqual, value: 0 }])
+        expect(tf.filterRows(rows)).to.be.an('array').and.to.have.lengthOf(3)
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.lessThan, value: 1 }])
+        expect(tf.filterRows(rows)).to.be.an('array').and.to.have.lengthOf(1)
+        tf.customFilter(FilterType.NUMBER, 'value', FilterOperator.AND, [{ operator: FilterConditionOperator.lessThanOrEqual, value: 1 }])
+        expect(tf.filterRows(rows)).to.be.an('array').and.to.have.lengthOf(2)
+      })
+    })
+    describe('text filter', function () {
       const rows = [
         {
           id: 1,
@@ -161,42 +255,42 @@ describe('TableUtils', function () {
       })
       it('match notEqualTo (case sensitive)', function () {
         const tf = new TableUtils.TableFilter([{ field: 'title', name: 'title' }])
-        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.notEqualTo, value: 'MIXEDcase'}])
+        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.notEqualTo, value: 'MIXEDcase' }])
         expect(tf.match(rows[0])).to.be.true
         expect(tf.match(rows[1])).to.be.true
         expect(tf.match(rows[2])).to.be.false
       })
       it('match notEqualTo (case insensitive)', function () {
         const tf = new TableUtils.TableFilter([{ field: 'title', name: 'title' }])
-        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.notEqualTo, value: 'MIXEDcase'}]).insensitive = true
+        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.notEqualTo, value: 'MIXEDcase' }]).insensitive = true
         expect(tf.match(rows[0])).to.be.true
         expect(tf.match(rows[1])).to.be.true
         expect(tf.match(rows[2])).to.be.false
       })
       it('match startNotWith (case sensitive)', function () {
         const tf = new TableUtils.TableFilter([{ field: 'title', name: 'title' }])
-        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsNotWith, value: 'MIXEDc'}])
+        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsNotWith, value: 'MIXEDc' }])
         expect(tf.match(rows[0])).to.be.true
         expect(tf.match(rows[1])).to.be.true
         expect(tf.match(rows[2])).to.be.false
       })
       it('match startNotWith (case insensitive)', function () {
         const tf = new TableUtils.TableFilter([{ field: 'title', name: 'title' }])
-        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsNotWith, value: 'MIXEDc'}]).insensitive = true
+        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsNotWith, value: 'MIXEDc' }]).insensitive = true
         expect(tf.match(rows[0])).to.be.true
         expect(tf.match(rows[1])).to.be.true
         expect(tf.match(rows[2])).to.be.false
       })
       it('match startsWith (case sensitive)', function () {
         const tf = new TableUtils.TableFilter([{ field: 'title', name: 'title' }])
-        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsWith, value: 'MIXEDc'}])
+        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsWith, value: 'MIXEDc' }])
         expect(tf.match(rows[0])).to.be.false
         expect(tf.match(rows[1])).to.be.false
         expect(tf.match(rows[2])).to.be.true
       })
       it('match startsWith (case insensitive)', function () {
         const tf = new TableUtils.TableFilter([{ field: 'title', name: 'title' }])
-        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsWith, value: 'mixedc'}]).insensitive = true
+        tf.textFilter('title', FilterOperator.AND, [{ operator: FilterConditionOperator.startsWith, value: 'mixedc' }]).insensitive = true
         expect(tf.match(rows[0])).to.be.false
         expect(tf.match(rows[1])).to.be.false
         expect(tf.match(rows[2])).to.be.true

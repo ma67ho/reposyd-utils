@@ -690,36 +690,9 @@ class DocumentOutlineModel {
     this._nodes = []
   }
 
-  add(parent) {
+  add(parent?: string) {
     const uuid = Uuid.generate()
     const p = this.getNodeByKey(parent)
-    // const n: DocumentOutlineNode = {
-    //   chapter: {
-    //     cm: {
-    //       modifiedby: null,
-    //       owner: null,
-    //       revision: -1,
-    //       shared: [],
-    //       timestamp: null
-    //     },
-    //     description: '',
-    //     number: '',
-    //     options: {
-    //       pagebreak: 'none'
-    //     },
-    //     script: {
-    //       id: null,
-    //       uuid: null,
-    //       options: {}
-    //     },
-    //     title: '',
-    //     uuid: uuid
-    //   },
-    //   children: [],
-    //   key: uuid,
-    //   state: 0x01,
-    //   parent: p === null ? null : p.key      
-    // }
     const n = new DocumentOutlineNode({
       cm: {
         modifiedby: null,
@@ -741,7 +714,7 @@ class DocumentOutlineModel {
       title: '',
       uuid: uuid
     })
-    if (p) {
+    if (p !== undefined) {
       const pn = new LexicographicalOrder.ChapterNumber(p.chapter.number)
       pn.add()
       if (p.children.length > 0) {

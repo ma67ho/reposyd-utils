@@ -118,7 +118,7 @@ class TableColumnFilter {
       if (typeof c.format === 'function') {
         v = c.format(v)
       }
-      return v.toString()
+      return v === null ? null : v.toString()
     }))]
     return l
   }

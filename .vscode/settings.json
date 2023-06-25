@@ -1,6 +1,7 @@
 {
     "editor.tabSize": 2,
     "mochaExplorer.files": "test/*.spec.ts",
+    "mochaExplorer.logpanel": true,
     "mochaExplorer.require": "ts-node/register",
     "testExplorer.hideEmptyLog": true,
     "testExplorer.mergeSuites": true

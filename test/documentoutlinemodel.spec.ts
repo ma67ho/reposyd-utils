@@ -3,15 +3,14 @@ import {DataModel, Uuid } from '../src'
 import { DocumentOutlineNodeState } from '../src/DataModel/documentoutlinemodel';
 import { IChapter } from '../src/ReportGenerator/types'
 
-// describe('Module DataModel', () => { 
-//   describe('DocumentOutlineModel', () => {
-//     let chapters: IChapter[]
-//     before(function() {
-//       chapters = [
-//         { uuid: Uuid.generate(), number: '1' } as IChapter,
-//         { uuid: Uuid.generate(), number: '1.1' } as IChapter
-//       ]
-      
+describe('Module DataModel', () => { 
+  describe('DocumentOutlineModel', () => {
+    let chapters: IChapter[]
+    before(function() {
+      chapters = [
+        { uuid: Uuid.generate(), number: '1' } as IChapter,
+        { uuid: Uuid.generate(), number: '1.1' } as IChapter
+      ]     
     })
     it('constructor', function() {
       let m = new DataModel.DocumentOutlineModel()
@@ -99,5 +98,5 @@ import { IChapter } from '../src/ReportGenerator/types'
       // expect(t[0].key).to.be.equal(p.key)
     })
 
-//   })
-// })
+  })
+})

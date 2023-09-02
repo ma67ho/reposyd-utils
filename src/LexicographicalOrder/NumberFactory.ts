@@ -22,7 +22,9 @@ export default class NumberBuilder {
       // repl: /\{(.*)\}/g,
       repl: /\{(.*?)\}/g,
       counter: /counter[(](.*),(.*),(.*),'(.*)'[)]|counter[(](.*),(.*)[)]/g,
-      chapnum: /chapnum[(](.*),(.*)[)]/g,
+      chapnum: /chapnum\((.*),(.*)\b\)/g,
+      eq: /eq\((.*),(.*),'(.*)'\)|eq\((.*),(.*),(.*)\)/g,
+      nq: /nw\((.*),(.*),(.*)\)/g,
       pad: /pad\((.*),(\d*),'(.*)','(e|s)'\)/g,
       padEnd: /padEnd\((.*),(\d*),'(.*)'\)/g,
       padStart: /padStart\((.*),(\d*),'(.*)'\)/g,
@@ -57,11 +59,18 @@ export default class NumberBuilder {
               n = n.replaceAll(match[0], `${parseInt(match[1]) ? parseInt(match[1]) * parseInt(match[2]) : match[1]}`.padStart(parseInt(match[3]), match[4]))
             }
             break
+          case REGEX.eq:
+            if (match[1] === match[2]){
+              n = n.replaceAll(match[0], match[3])  
+            } else {
+              n = n.replaceAll(match[0], '')
+            }
+            break
           case REGEX.pad:
-            if (match[4] === 'e'){
-              n = n.replaceAll(match[0], match[1].padEnd(parseInt(match[2]), match[3]))  
-            } else if (match[4] === 's'){
-              n = n.replaceAll(match[0], match[1].padStart(parseInt(match[2]), match[3]))  
+            if (match[4] === 'e') {
+              n = n.replaceAll(match[0], match[1].padEnd(parseInt(match[2]), match[3]))
+            } else if (match[4] === 's') {
+              n = n.replaceAll(match[0], match[1].padStart(parseInt(match[2]), match[3]))
             }
             break;
           case REGEX.padEnd:

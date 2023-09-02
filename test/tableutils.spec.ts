@@ -113,6 +113,16 @@ describe('TableUtils', function () {
         expect(tf.match(rows[0])).to.be.true
         expect(tf.match(rows[1])).to.be.true
       })
+      it('match with mapping table', function () {
+        const tf = new TableUtils.TableFilter([{ field: 'number', name: 'number' }])
+        const mapping = new Map()
+        mapping.set('10', '01')
+        tf.autoFilter('number', ['10'], mapping)
+        expect(tf.match(rows[0])).to.be.true
+        tf.autoFilter('number', ['10', '20'], mapping)
+        expect(tf.match(rows[0])).to.be.true
+        expect(tf.match(rows[1])).to.be.false
+      })
     })
     describe('number filter', function () {
       const rows = [

@@ -6,7 +6,6 @@ import DataModel from './DataModel'
 import DataFormatting from './DataFormatting'
 import Document from './Document'
 import ErrorHandling from './ErrorHandling'
-import * as InputMaskGenerator from './InputMaskGenerator'
 import * as Query from './Query'
 import ObjectHelper from './ObjectHelper'
 import LexicographicalOrder from './LexicographicalOrder'
@@ -24,7 +23,6 @@ export {
   DataFormatting,
   Document,
   ErrorHandling,
-  InputMaskGenerator,
   Query,
   ObjectHelper,
   PUID,

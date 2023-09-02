@@ -1,4 +1,5 @@
 export {calc} from "./calc";
+export * as Date from "./date";
 
 export enum Units {
   ANY = "*",
@@ -419,3 +420,4 @@ export function paperSize(format: IPageFormat): ICustomPaperSize {
   }
   return o;
 }
+

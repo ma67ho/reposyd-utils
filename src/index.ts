@@ -3,9 +3,10 @@ import Chapter from './Chapter'
 import * as Convert from './Convert'
 import DataImport from './DataImport'
 import DataModel from './DataModel'
-import Date from './Date'
+import DataFormatting from './DataFormatting'
 import Document from './Document'
 import ErrorHandling from './ErrorHandling'
+import * as InputMaskGenerator from './InputMaskGenerator'
 import * as Query from './Query'
 import ObjectHelper from './ObjectHelper'
 import LexicographicalOrder from './LexicographicalOrder'
@@ -20,9 +21,10 @@ export {
   Convert,
   DataImport,
   DataModel,
-  Date,
+  DataFormatting,
   Document,
   ErrorHandling,
+  InputMaskGenerator,
   Query,
   ObjectHelper,
   PUID,

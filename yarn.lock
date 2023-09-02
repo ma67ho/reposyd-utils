@@ -491,6 +491,11 @@ chokidar@3.5.3:
   optionalDependencies:
     fsevents "~2.3.2"
 
+cldr-dates-full@42.0.0:
+  version "42.0.0"
+  resolved "https://registry.yarnpkg.com/cldr-dates-full/-/cldr-dates-full-42.0.0.tgz#23e3f6beee8176baa0f2b8de5b1025e4e535c358"
+  integrity sha512-tHa0rDQxhM5k+dRdaI+Wh97VOeFu/OI5ibAvkT2vOuCqd+WtJcbsOK2s4+1Cuv3jkNtMs3l93L26cmO44zrJCQ==
+
 cliui@^7.0.2:
   version "7.0.4"
   resolved "https://registry.yarnpkg.com/cliui/-/cliui-7.0.4.tgz#a0265ee655476fc807aea9df3df8df7783808b4f"
@@ -578,6 +583,13 @@ date-fns@^2.28.0:
   version "2.28.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.28.0.tgz#9570d656f5fc13143e50c975a3b6bbeb46cd08b2"
   integrity sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==
+
+datetime-locale-patterns@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/datetime-locale-patterns/-/datetime-locale-patterns-1.0.1.tgz#11b9b6565b149905f5a1abaefb517c9d7e0e670b"
+  integrity sha512-6lcJrKMKgTzzTN7FmOZcCmGknmz9U5PB3L6h+kpCOdX/BgqK9r3Nexo7LZzBQL9ZY2cnSBQXnsWLXAFYTW0RXg==
+  dependencies:
+    cldr-dates-full "42.0.0"
 
 dayjs@^1.10.7:
   version "1.10.7"

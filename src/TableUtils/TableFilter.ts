@@ -1,4 +1,7 @@
-import { AutoFilter, ColumnFilter, ColumnFilterCondition, FilterOperator, FilterType, IAutoFilter, IColumnFilterCondition, INumberFilter, ITextFilter, NumberFilter, TextFilter } from "./ColumnFilter"
+import { AutoFilter, IAutoFilter } from "./AutoFilter"
+import { ColumnFilter, ColumnFilterCondition, FilterOperator, FilterType, IColumnFilterCondition } from "./ColumnFilter"
+import { INumberFilter, NumberFilter } from "./NumberFilter"
+import { ITextFilter, TextFilter } from "./TextFilter"
 
 
 export interface ITableColumn {
@@ -30,15 +33,16 @@ class TableColumnFilter {
    * @memberof TableColumnFilter
    * @see textFilter
    */
-  autoFilter(name: string, value: string[] | null): AutoFilter {
+  autoFilter(name: string, value: string[] | null, mapping?: Map<string|number,unknown>): AutoFilter {
     let f = this._filters.find(x => x.name === name) as AutoFilter
     if (f === undefined) {
-      f = new AutoFilter(name, value)
+      f = new AutoFilter(name, value, mapping)
       this._filters.push(f)
       this.notify('add', f)
     } else {
       if (f.type === FilterType.AUTO) {
         f.conditions[0].value = value || null
+        f.mapping = mapping
         this.notify('update', f)
       }
     }
@@ -256,11 +260,11 @@ class TableColumnFilter {
     return this._filters.map(x => x.toJSON())
   }
 
-  set(filters: (IAutoFilter | ITextFilter)[]) {
+  set(filters: (IAutoFilter | INumberFilter | ITextFilter)[]) {
     this._filters = filters.map(x => {
       let f
       if (x.type === FilterType.AUTO) {
-        f = new AutoFilter(x.name, (x as IAutoFilter).value)
+        f = new AutoFilter(x.name, (x as IAutoFilter).value, (x as IAutoFilter).mapping)
       } else if (x.type === FilterType.NUMBER) {
         f = new NumberFilter(x.name, x.operator, (x as INumberFilter).conditions)
       } else if (x.type === FilterType.TEXT) {

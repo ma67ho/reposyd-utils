@@ -1,3 +1,7 @@
+import { AutoFilter, IAutoFilter } from "./AutoFilter"
+import { INumberFilter, NumberFilter } from "./NumberFilter"
+import { ITextFilter, TextFilter } from "./TextFilter"
+
 export enum FilterConditionOperator {
   contains = 'contains',
   containsNot = 'containsnot',
@@ -57,8 +61,21 @@ export class ColumnFilterCondition {
     }
   }
 
-  match(val: unknown, insensitive?: boolean): boolean {
-    const v = typeof val === 'string' ? insensitive ? (this._value as string).toLowerCase() : this._value : this._value
+  match(val: unknown, options?: { insensitive?: boolean, mapping?: Map<string | number, unknown> }): boolean {
+    let v = typeof val === 'string' ? options.insensitive ? (this._value as string).toLowerCase() : this._value : this._value
+    if (options.mapping !== undefined) {
+      if (Array.isArray(v)) {
+        v = v.map(x => {
+          const m = options.mapping.get(x as string)
+          return m === undefined ? x : m
+        })
+      } else {
+        const m = options.mapping.get(v as string)
+        if (m !== undefined) {
+          v = m
+        }
+      }
+    }
     switch (this._operator) {
       case FilterConditionOperator.contains:
         return (val as string).includes(v as string)
@@ -129,6 +146,7 @@ export class ColumnFilterCondition {
 
 export class ColumnFilter {
   private _conditions: ColumnFilterCondition[]
+  protected _mapping: Map<string | number, unknown>
   private _name: string
   private _operator: FilterOperator
   private _type: FilterType
@@ -168,6 +186,7 @@ export class ColumnFilter {
     }
     return {
       value: this._conditions[0].value,
+      mapping: this._mapping,
       name: this.name,
       operator: this.operator,
       type: this.type
@@ -209,120 +228,5 @@ export class ColumnFilter {
   }
 }
 
-export interface IAutoFilter extends IColumnFilter {
-  readonly value: unknown[]
-}
-
-export class AutoFilter extends ColumnFilter {
-  constructor(name: string, value?: unknown[]) {
-    super(name, FilterType.AUTO)
-    if (value !== undefined) {
-      this.conditions[0].operator = FilterConditionOperator.includes
-      this.conditions[0].value = value
-    }
-  }
-  match(val): boolean {
-    const v = val.toString()
-    let m = this.conditions[0].value === null ? true : this.conditions[0].match(v)
-    for (let i = 1; i < this.conditions.length; i++) {
-      if (this.conditions[i].operator !== FilterConditionOperator.none) {
-        let r = false
-        if (this.conditions[i].value === null) {
-          r = true
-        } else {
-          r = this.conditions[i].match(v)
-        }
-        if (this.operator === FilterOperator.OR) {
-          m = m || r
-        } else {
-          m = m && r
-        }
-      }
-    }
-    return m
-  }
-
-  get isActive(): boolean {
-    return this.conditions[0].operator !== FilterConditionOperator.none && Array.isArray(this.conditions[0].value)
-  }
-
-  get value() {
-    return this.conditions[0].value
-  }
-  set value(val) {
-    this.conditions[0].value = val
-  }
-}
-
-export interface INumberFilter extends IColumnFilter {
-  readonly conditions: IColumnFilterCondition[]
-}
-
-export class NumberFilter extends ColumnFilter {
-  constructor(name: string, operator: FilterOperator, conditions: IColumnFilterCondition[]) {
-    super(name, FilterType.NUMBER)
-    this.operator = operator
-    this.conditions = conditions.map(c => new ColumnFilterCondition(c.operator, c.value))
-  }
-  match(val): boolean {
-    
-    if (isNaN(val)) {
-      throw new TypeError('"val" is not a number')
-    }
-    let m = this.conditions[0].match(+val)
-    for (let i = 1; i < this.conditions.length; i++) {
-      if (this.conditions[i].operator !== FilterConditionOperator.none) {
-        const r = this.conditions[i].match(+val)
-        if (this.operator === FilterOperator.OR) {
-          m = m || r
-        } else {
-          m = m && r
-        }
-      }
-    }
-    return m
-  }
-}
 
 
-export interface ITextFilter extends IColumnFilter {
-  readonly conditions: IColumnFilterCondition[]
-}
-
-export class TextFilter extends ColumnFilter {
-  private _insensitive: boolean
-  // constructor(name: string, operator: FilterOperator, conditions: IColumnFilterCondition[])
-  constructor(name: string, operator: FilterOperator, conditions: IColumnFilterCondition[]) {
-    super(name, FilterType.TEXT)
-    this.operator = operator
-    this.conditions = conditions.map(c => new ColumnFilterCondition(c.operator, c.value))
-    this._insensitive = true
-  }
-
-  match(val): boolean {
-    if (typeof val !== 'string') {
-      throw new TypeError('"val" is not a string')
-    }
-    const v = this.insensitive ? val.toLowerCase() : val
-    let m = this.conditions[0].match(v, this.insensitive)
-    for (let i = 1; i < this.conditions.length; i++) {
-      if (this.conditions[i].operator !== FilterConditionOperator.none) {
-        const r = this.conditions[i].match(v, this.insensitive)
-        if (this.operator === FilterOperator.OR) {
-          m = m || r
-        } else {
-          m = m && r
-        }
-      }
-    }
-    return m
-  }
-
-
-  get insensitive(): boolean {
-    return this._insensitive
-  }
-  set insensitive(val: boolean) {
-    this._insensitive = val
-  }
-}

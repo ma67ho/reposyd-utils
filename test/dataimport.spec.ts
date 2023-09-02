@@ -2,11 +2,6 @@ import { DataImport } from '../src';
 import { expect } from 'chai';
 import Rules, { DataImportRuleType, TDataImportCounter } from '../src/DataImport/Rules';
 describe('DataImport', function () {
-  describe('mapColumns', function () {
-    it('', function () {
-      //
-    })
-  })
   describe('plainText2html', function () {
     it('simple text', function () {
       const t = DataImport.plainText2html('hello world')

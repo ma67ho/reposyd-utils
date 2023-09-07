@@ -40,6 +40,7 @@
     "flat": "^5.0.2",
     "html-escaper": "^3.0.3",
     "jsonexport": "^3.2.0",
+    "lodash.merge": "^4.6.2",
     "nerdamer": "^1.1.13",
     "node-htmldiff": "^0.9.3",
     "romans": "^2.0.3",

@@ -1,6 +1,7 @@
 import Array from './Array'
 import Chapter from './Chapter'
 import * as Convert from './Convert'
+import DataAnalysis from './DataAnalysis'
 import DataImport from './DataImport'
 import DataModel from './DataModel'
 import DataFormatting from './DataFormatting'
@@ -18,6 +19,7 @@ export {
   Array,
   Chapter,
   Convert,
+  DataAnalysis,
   DataImport,
   DataModel,
   DataFormatting,

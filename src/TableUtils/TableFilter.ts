@@ -10,13 +10,21 @@ export interface ITableColumn {
   readonly name: string
 }
 
+export interface ITableColumnFilterOptions {
+  readonly enableCache?: boolean
+}
+
 class TableColumnFilter {
   private _columns: ITableColumn[]
   private _filters: ColumnFilter[]
   private _data: unknown[]
   private _dataKey: string | object
   private _listeners: unknown[]
-  constructor(columns) {
+  private _cachedOptions: Record<string, unknown[]>
+  private _cacheEnabled: boolean
+  constructor(columns, options?: ITableColumnFilterOptions) {
+    this._cachedOptions = {}
+    this._cacheEnabled = options?.enableCache === undefined ? false : options.enableCache
     this._columns = columns
     this._data = []
     this._filters = []
@@ -33,7 +41,7 @@ class TableColumnFilter {
    * @memberof TableColumnFilter
    * @see textFilter
    */
-  autoFilter(name: string, value: string[] | null, mapping?: Map<string|number,unknown>): AutoFilter {
+  autoFilter(name: string, value: string[] | null, mapping?: Map<string | number, unknown>): AutoFilter {
     let f = this._filters.find(x => x.name === name) as AutoFilter
     if (f === undefined) {
       f = new AutoFilter(name, value, mapping)
@@ -88,6 +96,20 @@ class TableColumnFilter {
 
   }
 
+  clearCache(column?: string) {
+    if (column !== undefined && this._cachedOptions[column] !== undefined) {
+      this._cachedOptions[column] = []
+    } else {
+      this._cachedOptions = {}
+    }
+  }
+  enableCache(on: boolean) {
+    this._cacheEnabled = on
+  }
+  isCacheEnabled(): boolean {
+    return this._cacheEnabled
+  }
+
   private notify(event, data?) {
     for (const recv of this._listeners.filter(x => x[0] === event)) {
       recv[1](data)
@@ -112,10 +134,13 @@ class TableColumnFilter {
    * @return {*}  {unknown[]}
    * @memberof TableColumnFilter
    */
-  options(colname): unknown[] {
+  options(colname: string): unknown[] {
     const c = this._columns.find(x => x.name === colname)
     if (c === undefined) {
       return []
+    }
+    if (this._cacheEnabled && this._cachedOptions[colname] !== undefined) {
+      return this._cachedOptions[colname]
     }
     const l = [...new Set(this._data.map((row: unknown) => {
       let v = typeof c.field === 'function' ? c.field(row) : row[c.field as string]
@@ -124,6 +149,7 @@ class TableColumnFilter {
       }
       return v === null ? null : v.toString()
     }))]
+    this._cachedOptions[colname] = l
     return l
   }
 
@@ -226,6 +252,7 @@ class TableColumnFilter {
   }
   set data(val: unknown[]) {
     this._data = val
+    this.clearCache()
   }
   get definition() {
     const o = {

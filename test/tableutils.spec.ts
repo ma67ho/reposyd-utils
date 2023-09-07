@@ -17,6 +17,18 @@ describe('TableUtils', function () {
       tf.data = [{ data: { col0: '42' } }]
       expect(tf.options('col0')).to.have.deep.members(['42'])
     })
+    it('options (cache enabled)', function () {
+      let tf = new TableUtils.TableFilter([{ field: 'col0', name: 'col0' }])
+      tf.enableCache(true)
+      expect(tf.isCacheEnabled()).to.be.true
+      tf.data = [{ col0: '42' }]
+      expect(tf.options('col0')).to.have.deep.members(['42'])
+
+      tf = new TableUtils.TableFilter([{ field: row => row.data.col0, name: 'col0' }], { enableCache: true})      
+      expect(tf.isCacheEnabled()).to.be.true
+      tf.data = [{ data: { col0: '42' } }]
+      expect(tf.options('col0')).to.have.deep.members(['42'])
+    })
     it('customFilter', function () {
       const tf = new TableUtils.TableFilter([{ field: 'col0', name: 'col0' }, { field: 'col1', name: 'col1' }])
       tf.customFilter(FilterType.NUMBER, 'col0', FilterOperator.AND, [{ operator: FilterConditionOperator.contains, value: 1 }])

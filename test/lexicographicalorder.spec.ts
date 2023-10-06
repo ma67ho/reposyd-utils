@@ -265,13 +265,26 @@ describe('Module LexicographicalOrder', () => {
       expect(a.isGreater(b)).to.be.true
       expect(a.isLess(b)).to.be.false
     })
-    it("compare('II', '1')", () => {
+    it("compare('II', '1')", function() {
       const a = new LexicographicalOrder.ChapterNumber('II')
       const b = new LexicographicalOrder.ChapterNumber('1')
       expect(a.compare(b)).to.equal(1)
       expect(a.isEqual(b)).to.be.false
       expect(a.isGreater(b)).to.be.true
       expect(a.isLess(b)).to.be.false
+    })
+    it('value(...)', function() {
+      const n = new LexicographicalOrder.ChapterNumber('1')
+      expect(n.value()).to.eql(1)
+      expect(n.value(0)).to.eql(1)
+      // expect(n.value(1)).to.be.rejectedWith(RangeError)
+    })
+    it('setValue(...)', function() {
+      const n = new LexicographicalOrder.ChapterNumber('1')
+      n.setValue(2)
+      expect(n.value()).to.eql(2)
+      expect(n.value(0)).to.eql(2)
+      // expect(n.value(1)).to.be.rejectedWith(RangeError)
     })
   })
 });

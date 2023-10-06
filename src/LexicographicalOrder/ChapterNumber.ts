@@ -165,6 +165,30 @@ class ChapterNumber {
     return this;
   }
 
+  setStyle(style: NumberStyle, level?: number) {
+    const lvl = level === undefined ? this._levels.length - 1 : level
+    if (lvl < 0 || lvl >= this._levels.length){
+      throw new RangeError('level out of range')
+    }
+    this._levels[lvl].style = style
+  }
+
+  setValue(value: number, level?: number) {
+    const lvl = level === undefined ? this._levels.length - 1 : level
+    if (lvl < 0 || lvl >= this._levels.length){
+      throw new RangeError('level out of range')
+    }
+    this._levels[lvl].val = value
+  }
+
+  style(level?:number): NumberStyle {
+    const lvl = level === undefined ? this._levels.length - 1 : level
+    if (lvl < 0 || lvl >= this._levels.length){
+      throw new RangeError('level out of range')
+    }
+    return this._levels[lvl].style
+  }
+
   toString(digits?: number): string {
     digits = digits || 0;
     let t = "";
@@ -187,6 +211,14 @@ class ChapterNumber {
       }
     });
     return t;
+  }
+
+  value(level?:number): number {
+    const lvl = level === undefined ? this._levels.length - 1 : level
+    if (lvl < 0 || lvl >= this._levels.length){
+      throw new RangeError('level out of range')
+    }
+    return this._levels[lvl].val
   }
 
   get levels(): number {

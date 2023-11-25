@@ -1,6 +1,7 @@
 import romans from "romans";
 import { NumberStyle } from "../types";
 import isRomanNumber from "./isRomanNumber";
+import isAlphabeticalOrder from "./isAlphabeticalOrder";
 
 function compareSectionNumnber(a, b) {
   if (isNaN(a) && isNaN(b)) {
@@ -93,6 +94,26 @@ class ChapterNumber {
             val: romans.deromanize(level),
             style: NumberStyle.Roman,
           });
+        } else if (isAlphabeticalOrder(level)) {
+          let val = 0
+          for (let i = 0; i < level.length; i++){
+            if (level[i] === level[i].toUpperCase()){
+              val += level.charCodeAt(i) - 64
+            } else {
+              val += level.charCodeAt(i) - 96
+            }
+          }
+          if (level === level.toUpperCase()) {
+            this._levels.push({
+              val: val,
+              style: NumberStyle.AlphabeticalUpperCase
+            })
+          } else {
+            this._levels.push({
+              val: level,
+              style: NumberStyle.AlphabeticalLowerCase
+            })
+          }
         } else {
           const v = parseInt(level)
           if (Number.isNaN(v)) {
@@ -100,7 +121,6 @@ class ChapterNumber {
               val: level,
               style: NumberStyle.NaN,
             });
-
           } else {
             this._levels.push({
               val: parseInt(level),
@@ -115,23 +135,23 @@ class ChapterNumber {
   dec(count?: number): ChapterNumber {
     count = count || 1;
     if (this._levels.length > 0) {
-      if (this._levels[this._levels.length - 1].style !== NumberStyle.NaN){
+      if (this._levels[this._levels.length - 1].style !== NumberStyle.NaN) {
         this._levels[this._levels.length - 1].val =
-        this._levels[this._levels.length - 1].val - count;
-      if (this._levels[this._levels.length - 1].style === NumberStyle.Roman) {
-        if (this._levels[this._levels.length - 1].val < 1) {
-          this._levels[this._levels.length - 1].val = this._levels[
-            this._levels.length - 1
-          ].val = 1;
-        }
-      } else {
-        if (this._levels[this._levels.length - 1].val < 0) {
-          this._levels[this._levels.length - 1].val = this._levels[
-            this._levels.length - 1
-          ].val = 0;
+          this._levels[this._levels.length - 1].val - count;
+        if (this._levels[this._levels.length - 1].style === NumberStyle.Roman) {
+          if (this._levels[this._levels.length - 1].val < 1) {
+            this._levels[this._levels.length - 1].val = this._levels[
+              this._levels.length - 1
+            ].val = 1;
+          }
+        } else {
+          if (this._levels[this._levels.length - 1].val < 0) {
+            this._levels[this._levels.length - 1].val = this._levels[
+              this._levels.length - 1
+            ].val = 0;
+          }
         }
       }
-    }
     }
     return this;
   }
@@ -139,8 +159,8 @@ class ChapterNumber {
   inc(count?: number): ChapterNumber {
     count = count || 1;
     if (this._levels.length > 0) {
-      if (this._levels[this._levels.length - 1].style !== NumberStyle.NaN){
-      this._levels[this._levels.length - 1].val = this._levels[this._levels.length - 1].val + count;
+      if (this._levels[this._levels.length - 1].style !== NumberStyle.NaN) {
+        this._levels[this._levels.length - 1].val = this._levels[this._levels.length - 1].val + count;
       }
     }
     return this;
@@ -167,7 +187,7 @@ class ChapterNumber {
 
   setStyle(style: NumberStyle, level?: number) {
     const lvl = level === undefined ? this._levels.length - 1 : level
-    if (lvl < 0 || lvl >= this._levels.length){
+    if (lvl < 0 || lvl >= this._levels.length) {
       throw new RangeError('level out of range')
     }
     this._levels[lvl].style = style
@@ -175,15 +195,15 @@ class ChapterNumber {
 
   setValue(value: number, level?: number) {
     const lvl = level === undefined ? this._levels.length - 1 : level
-    if (lvl < 0 || lvl >= this._levels.length){
+    if (lvl < 0 || lvl >= this._levels.length) {
       throw new RangeError('level out of range')
     }
     this._levels[lvl].val = value
   }
 
-  style(level?:number): NumberStyle {
+  style(level?: number): NumberStyle {
     const lvl = level === undefined ? this._levels.length - 1 : level
-    if (lvl < 0 || lvl >= this._levels.length){
+    if (lvl < 0 || lvl >= this._levels.length) {
       throw new RangeError('level out of range')
     }
     return this._levels[lvl].style
@@ -196,7 +216,29 @@ class ChapterNumber {
       if (index > 0) {
         t += ".";
       }
-      if (level.style === NumberStyle.NaN) {
+      if (level.style === NumberStyle.AlphabeticalLowerCase) {
+        let val = level.val
+        while(val > 0){
+          if (val % 26 > 0){
+            t = String.fromCharCode(96 + val % 26) + t
+            val -= val % 26
+          } else {
+            t = 'z' + t
+            val -= 26
+          }
+        }
+      } else if (level.style === NumberStyle.AlphabeticalUpperCase) {
+        let val = level.val
+        while(val > 0){
+          if (val % 26 > 0){
+            t = String.fromCharCode(64 + val % 26) + t
+            val -= val % 26
+          } else {
+            t = 'Z' + t
+            val -= 26
+          }
+        }
+      } else if (level.style === NumberStyle.NaN) {
         t += level.val
       } else if (level.style === NumberStyle.Roman) {
         t += romans.romanize(level.val);
@@ -213,9 +255,9 @@ class ChapterNumber {
     return t;
   }
 
-  value(level?:number): number {
+  value(level?: number): number {
     const lvl = level === undefined ? this._levels.length - 1 : level
-    if (lvl < 0 || lvl >= this._levels.length){
+    if (lvl < 0 || lvl >= this._levels.length) {
       throw new RangeError('level out of range')
     }
     return this._levels[lvl].val

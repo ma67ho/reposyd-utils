@@ -61,37 +61,49 @@ describe('Module LexicographicalOrder', () => {
         expect(LexicographicalOrder.NumberFactory.build('{val}', { val: '42' })).to.be.equal('42')
       })
     })
-    describe('boolean functions', function() {
-      it("eq(1,1,'2')", function() {
+    describe('boolean functions', function () {
+      it("eq(1,1,'2')", function () {
         expect(LexicographicalOrder.NumberFactory.build("eq(1,1,'2')", {})).to.be.equal('2')
       })
-      it("eq(1,1,2)", function() {
+      it("eq(1,1,2)", function () {
         expect(LexicographicalOrder.NumberFactory.build("eq(1,1,2)", {})).to.be.equal(2)
       })
-      it("eq(1,2,'2')", function() {
+      it("eq(1,2,'2')", function () {
         expect(LexicographicalOrder.NumberFactory.build("eq(1,2,'2')", {})).to.be.empty
       })
     })
-    describe('combined functions', function() {
-      it("chapnum('1.1',2)-pad(1,3,'0',e)", function(){
+    describe('combined functions', function () {
+      it("chapnum('1.1',2)-pad(1,3,'0',e)", function () {
         expect(LexicographicalOrder.NumberFactory.build("chapnum(1.1,2)-padEnd(1,3,'0')", {})).to.be.equal('01.01-100')
       })
-      it("chapnum('1.1',2)-pad(1,3,'0',s)", function(){
+      it("chapnum('1.1',2)-pad(1,3,'0',s)", function () {
         expect(LexicographicalOrder.NumberFactory.build("chapnum(1.1,2)-padStart(1,3,'0')", {})).to.be.equal('01.01-001')
       })
-      it("chapnum('1.1',2)-padEnd(1,3,'0')", function(){
+      it("chapnum('1.1',2)-padEnd(1,3,'0')", function () {
         expect(LexicographicalOrder.NumberFactory.build("chapnum(1.1,2)-padEnd(1,3,'0')", {})).to.be.equal('01.01-100')
       })
-      it("chapnum('1.1',2)-padStart(1,3,'0')", function(){
+      it("chapnum('1.1',2)-padStart(1,3,'0')", function () {
         expect(LexicographicalOrder.NumberFactory.build("chapnum(1.1,2)-padStart(1,3,'0')", {})).to.be.equal('01.01-001')
       })
-      it("padStart(1,3,'0')-chapnum('1.1',2)", function(){
+      it("padStart(1,3,'0')-chapnum('1.1',2)", function () {
         expect(LexicographicalOrder.NumberFactory.build("padStart(1,3,'0')-chapnum(1.1,2)", {})).to.be.equal('001-01.01')
       })
     })
   })
 
   describe('ChapterNumber', () => {
+    it('isAlphabeticalOrder', function() {
+      expect(LexicographicalOrder.isAlphabeticalOrder('')).to.be.false
+      expect(LexicographicalOrder.isAlphabeticalOrder('A')).to.be.true
+      expect(LexicographicalOrder.isAlphabeticalOrder('Z')).to.be.true
+      expect(LexicographicalOrder.isAlphabeticalOrder('AA')).to.be.true
+      expect(LexicographicalOrder.isAlphabeticalOrder('AZ')).to.be.true
+      expect(LexicographicalOrder.isAlphabeticalOrder('Az')).to.be.false
+      expect(LexicographicalOrder.isAlphabeticalOrder('aZ')).to.be.false
+      expect(LexicographicalOrder.isAlphabeticalOrder('a1')).to.be.false
+      expect(LexicographicalOrder.isAlphabeticalOrder('a')).to.be.true
+      expect(LexicographicalOrder.isAlphabeticalOrder('z')).to.be.true
+    })
     it('isRomanNumber', () => {
       expect(LexicographicalOrder.isRomanNumber('')).to.be.false
       expect(LexicographicalOrder.isRomanNumber('A')).to.be.false
@@ -115,6 +127,24 @@ describe('Module LexicographicalOrder', () => {
       expect(cn.levels).to.equal(1)
       expect(cn.toString()).to.equal('1')
     })
+    it("construct LexicographicalOrder.ChapterNumber('1.1')", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1.1')
+      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.1')
+    })
+    it("construct LexicographicalOrder.ChapterNumber('A')", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('A')
+      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
+      expect(cn.levels).to.equal(1)
+      expect(cn.toString()).to.equal('A')
+    })
+    it("construct LexicographicalOrder.ChapterNumber('ZA')", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('ZA')
+      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
+      expect(cn.levels).to.equal(1)
+      expect(cn.toString()).to.equal('ZA')
+    })
     it("construct LexicographicalOrder.ChapterNumber('I')", () => {
       const cn = new LexicographicalOrder.ChapterNumber('I')
       expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
@@ -137,6 +167,24 @@ describe('Module LexicographicalOrder', () => {
       cn.add(10)
       expect(cn.levels).to.equal(2)
       expect(cn.toString()).to.equal('1.10')
+    })
+    it("add(style: AlphabeticalLowerCase)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.AlphabeticalLowerCase)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.a')
+      cn.add()
+      expect(cn.levels).to.equal(3)
+      expect(cn.toString()).to.equal('1.a.1')
+    })
+    it("add(style: AlphabeticalUpperCase)", () => {
+      const cn = new LexicographicalOrder.ChapterNumber('1')
+      cn.add(NumberStyle.AlphabeticalUpperCase)
+      expect(cn.levels).to.equal(2)
+      expect(cn.toString()).to.equal('1.A')
+      cn.add()
+      expect(cn.levels).to.equal(3)
+      expect(cn.toString()).to.equal('1.A.1')
     })
     it("add(style: Arabic)", () => {
       const cn = new LexicographicalOrder.ChapterNumber('1')
@@ -207,27 +255,31 @@ describe('Module LexicographicalOrder', () => {
       cn.dec(2)
       expect(cn.toString()).to.equal('1')
     })
-    it("construct LexicographicalOrder.ChapterNumber('1.1')", () => {
-      const cn = new LexicographicalOrder.ChapterNumber('1.1')
-      expect(cn).to.be.an.instanceof(LexicographicalOrder.ChapterNumber)
-      expect(cn.levels).to.equal(2)
-      expect(cn.toString()).to.equal('1.1')
-    })
-    it("add()", () => {
-      const cn = new LexicographicalOrder.ChapterNumber('1.1')
-      cn.add()
-      expect(cn.levels).to.equal(3)
-      expect(cn.toString()).to.equal('1.1.1')
-    })
     it("remove()", () => {
       const cn = new LexicographicalOrder.ChapterNumber('1.1.1')
       cn.remove()
       expect(cn.levels).to.equal(2)
       expect(cn.toString()).to.equal('1.1')
     })
-    it("comapre('1', '1')", () => {
+    it("compare('1', '1')", () => {
       const a = new LexicographicalOrder.ChapterNumber('1')
       const b = new LexicographicalOrder.ChapterNumber('1')
+      expect(a.compare(b)).to.equal(0)
+      expect(a.isEqual(b)).to.be.true
+      expect(a.isGreater(b)).to.be.false
+      expect(a.isLess(b)).to.be.false
+    })
+    it("compare('1', 'A')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('1')
+      const b = new LexicographicalOrder.ChapterNumber('A')
+      expect(a.compare(b)).to.equal(0)
+      expect(a.isEqual(b)).to.be.true
+      expect(a.isGreater(b)).to.be.false
+      expect(a.isLess(b)).to.be.false
+    })
+    it("compare('1', 'a')", () => {
+      const a = new LexicographicalOrder.ChapterNumber('1')
+      const b = new LexicographicalOrder.ChapterNumber('a')
       expect(a.compare(b)).to.equal(0)
       expect(a.isEqual(b)).to.be.true
       expect(a.isGreater(b)).to.be.false
@@ -265,7 +317,7 @@ describe('Module LexicographicalOrder', () => {
       expect(a.isGreater(b)).to.be.true
       expect(a.isLess(b)).to.be.false
     })
-    it("compare('II', '1')", function() {
+    it("compare('II', '1')", function () {
       const a = new LexicographicalOrder.ChapterNumber('II')
       const b = new LexicographicalOrder.ChapterNumber('1')
       expect(a.compare(b)).to.equal(1)
@@ -273,13 +325,13 @@ describe('Module LexicographicalOrder', () => {
       expect(a.isGreater(b)).to.be.true
       expect(a.isLess(b)).to.be.false
     })
-    it('value(...)', function() {
+    it('value(...)', function () {
       const n = new LexicographicalOrder.ChapterNumber('1')
       expect(n.value()).to.eql(1)
       expect(n.value(0)).to.eql(1)
       // expect(n.value(1)).to.be.rejectedWith(RangeError)
     })
-    it('setValue(...)', function() {
+    it('setValue(...)', function () {
       const n = new LexicographicalOrder.ChapterNumber('1')
       n.setValue(2)
       expect(n.value()).to.eql(2)

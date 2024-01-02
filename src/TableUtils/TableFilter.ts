@@ -211,7 +211,6 @@ class TableColumnFilter {
     for (let i = 0; result.length > 0 && i < this._filters.length; i++) {
       const f = this._filters[i]
       const col = this._columns.find(x => x.name === f.name)
-      console.log(col.format)
       result = result.filter(row => {
         const v = typeof col.field === 'function' ? col.field(row) : row[(col.field as string)]
         return f.match(col.format(v))

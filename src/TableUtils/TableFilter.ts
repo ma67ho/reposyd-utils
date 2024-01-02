@@ -6,7 +6,7 @@ import { ITextFilter, TextFilter } from "./TextFilter"
 
 export interface ITableColumn {
   readonly field: string | object
-  readonly format?: object
+  readonly format?: ((val: unknown) => unknown)
   readonly name: string
 }
 
@@ -211,9 +211,10 @@ class TableColumnFilter {
     for (let i = 0; result.length > 0 && i < this._filters.length; i++) {
       const f = this._filters[i]
       const col = this._columns.find(x => x.name === f.name)
+      console.log(col.format)
       result = result.filter(row => {
         const v = typeof col.field === 'function' ? col.field(row) : row[(col.field as string)]
-        return f.match(v)
+        return f.match(col.format(v))
       })
     }
     return result

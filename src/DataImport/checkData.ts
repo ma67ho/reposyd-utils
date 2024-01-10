@@ -1,5 +1,7 @@
 export enum TCheckDataError {
-  ENUMERATIONERROR = 1
+  ENUMERATIONERROR = 1,
+  OWNERNOTFOUND = 2,
+  RESPONSIBLENOTFOUND = 3
 }
 
 export interface ICheckDataError {

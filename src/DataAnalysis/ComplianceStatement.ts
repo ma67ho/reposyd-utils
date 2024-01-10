@@ -1,8 +1,8 @@
 import QualityGate from "./QualityGate";
 
 export default class ComplianceStatement extends QualityGate {
-  constructor(definition){
-    super(definition)
+  constructor(definition?){
+    super(definition || {properties: ComplianceStatement.properties()})
   }
 
   static properties() {
@@ -15,7 +15,7 @@ export default class ComplianceStatement extends QualityGate {
       },
       result: {
         groupBy: 'assessment',
-        assessmentPending: "#result eq null or $property('state') eq 'pending'",
+        assessmentPending: "#result eq null or $property('assessment') eq 'pending'",
         props: [
           {
             id: 'assessment',
@@ -26,6 +26,7 @@ export default class ComplianceStatement extends QualityGate {
                 color: 'slategrey',
                 condition: "#result eq null or $property('assessment') eq #groupkey",
                 icon: 'bi-cart2',
+                key: 'pending',
                 label: {
                   de: 'ausstehend',
                   en: 'pending'

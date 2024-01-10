@@ -274,16 +274,68 @@ describe('DataAnalyis', () => {
 
       expect(qg.assessmentPending(results[0].result as IDataAnalyisResult)).to.be.true
     })
-
-    it('updateAssessment()', function() {
+    it('should return a list of pending assessments', function () {
       const qg = new QualityGate(definition)
       qg.read(results)
-      expect(qg.updateAssessment(0, 0, { state: 'onhold'}).result?.props.state).to.eql('onhold')
+      expect(qg.pendingAssessments()).to.be.an('array').with.lengthOf(2)
+
+    })
+    it('updateAssessment()', function () {
+      const qg = new QualityGate(definition)
+      qg.read(results)
+      expect(qg.updateAssessment(0, 0, { state: 'onhold' }).result?.props.state).to.eql('onhold')
     })
     it('test', function () {
 
       const qg = new QualityGate(definition)
       expect(qg.groups).to.be.an('array').and.to.have.lengthOf(6)
+    })
+    describe('Compliance Statement', function () {
+      const results: IDataAnalyisResultContainer[] = [
+        {
+          designdata: {
+            dd: {
+              type: 'ddo'
+            }
+          },
+          result: null
+        },
+        {
+          designdata: {
+            dd: {
+              type: 'ddo'
+            }
+          },
+          result: {
+            props: {
+              assessment: 'pending'
+            },
+            uuid: null
+          }
+        },
+        {
+          designdata: {
+            dd: {
+              type: 'ddo'
+            }
+          },
+          result: {
+            props: {
+              assessment: 'accepted'
+            },
+            uuid: null
+          }
+        }
+      ]
+      it('should create a compliance statement container', function () {
+        const c = new DataAnalysis.ComplianceStatement()
+        expect(c.groups.length).to.eql(5)
+      })
+      it('should return a list of pending assessments', function () {
+        const c = new DataAnalysis.ComplianceStatement()
+        c.read(results)
+        expect(c.pendingAssessments()).to.be.an('array').with.lengthOf(2)
+      })
     })
   })
 })

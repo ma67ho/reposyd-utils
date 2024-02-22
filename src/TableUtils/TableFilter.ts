@@ -213,7 +213,7 @@ class TableColumnFilter {
       const col = this._columns.find(x => x.name === f.name)
       result = result.filter(row => {
         const v = typeof col.field === 'function' ? col.field(row) : row[(col.field as string)]
-        return f.match(col.format(v))
+        return typeof col.format === 'function' ? f.match(col.format(v)) : f.match(v)
       })
     }
     return result

@@ -157,6 +157,26 @@ function uriOperator(op: QueryConditionOperator): string {
 //   }
 //   return []
 // }
+export function toOData(definition: IQueryDefinition): string {
+  const frags = []
+
+  for (const cond of definition.conditions) {
+    if (cond.type === QueryConditionType.DDL) {
+      frags.push(`${cond.subject[0]}->${cond.subject[1]} ${cond.subject[2]} ${uriOperator(cond.operator)} ${args(cond)}`)
+    } else if (cond.type === QueryConditionType.DDO) {
+      const subject = Array.isArray(cond.subject) ? cond.subject.map(it => it.replace(/\./g, '/')) : cond.subject.replace(/\./g, '/')
+      if (returnsBoolean(cond.operator)) {
+        frags.push(`${uriOperator(cond.operator)}(${subject},${args(cond)}) eq ${isNegated(cond) ? 'false' : 'true'}`)
+      } else if (returnsNumber(cond.operator)) {
+        frags.push(`${uriOperator(cond.operator)}(${subject},${args(cond)}) ${uriOperator(cond.operator)} ${cond.value}`)
+        } else {
+        frags.push(`${subject} ${uriOperator(cond.operator)} ${args(cond)}`)
+      }
+    }
+  }
+
+  return frags.join(definition.match === 'and' ? ' and ' : ' or ')
+}
 
 export function toURI(definition: IQueryDefinition): string {
   const frags = []

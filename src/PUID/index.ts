@@ -1,4 +1,6 @@
-export function compare (a, b){
+import { isEmpty } from "lodash"
+
+function compare (a, b){
   const al = a.split('-')
   const bl = b.split('-')
   
@@ -26,4 +28,18 @@ export function compare (a, b){
     return 1
   }
   return 0
+}
+
+function isPUID(str?: string): boolean {
+  if (isEmpty(str)){
+    return false
+  }
+  // eslint-disable-next-line no-useless-escape
+  const regexp = /^[a-zA-Z\d #$@\(\)\[\]+*]+-[A-Z]{2}-\d{1,}$|^[A-Z]{2}-\d{1,}$/
+  return str.match(regexp) !== null
+}
+
+export {
+  compare,
+  isPUID
 }

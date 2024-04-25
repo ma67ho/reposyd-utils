@@ -30,12 +30,12 @@ function compare (a, b){
   return 0
 }
 
-function isPUID(str?: string): boolean {
+function isPUID(str?: string, searchPattern?: boolean): boolean {
   if (isEmpty(str)){
     return false
   }
   // eslint-disable-next-line no-useless-escape
-  const regexp = /^[a-zA-Z\d #$@\(\)\[\]+*]+-[A-Z]{2}-\d{1,}$|^[A-Z]{2}-\d{1,}$/
+  const regexp = !searchPattern ? /^[a-zA-Z\d #$@\(\)\[\]+*]+-[A-Z]{2}-\d{1,}$|^[A-Z]{2}-\d{1,}$/ : /^[a-zA-Z\d #$@\(\)\[\]+*]+-[A-Z]{2,}-[0-9_\%]+\b|^[A-Z]{2,}-[0-9_\%]+\b/
   return str.match(regexp) !== null
 }
 

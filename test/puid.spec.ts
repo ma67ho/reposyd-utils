@@ -47,5 +47,11 @@ describe('PUID', function () {
       expect(PUID.isPUID('(TEST)-RT-1')).to.be.true
       expect(PUID.isPUID('[TEST]-RT-1')).to.be.true
     })
+    it ('should return false for a PUID with search pattern and option disabled', function() {
+      expect(PUID.isPUID('test-RT-1_')).to.be.false
+    })
+    it('should return true for a PUID with search pattern and option enabled', function() {
+      expect(PUID.isPUID('test-RT-1_', true)).to.be.true
+    })
   })
 })

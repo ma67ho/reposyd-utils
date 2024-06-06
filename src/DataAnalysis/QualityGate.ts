@@ -1,3 +1,4 @@
+import { isUndefined } from "lodash"
 import { IDataAnalyisResult, IDataAnalyisResultContainer, IDataAnalyisResultEnumProperty, IDataAnalyisResultPropertyEnumItem } from "."
 import Uuid from "../Uuid"
 import { build } from "./ConditionBuilder"
@@ -99,6 +100,9 @@ export default class QualityGate extends DataAnalysisContainer {
   }
 
   pendingAssessments(): IDataAnalyisResultContainer[] {
+    if (isUndefined(this.definition)){
+      return []
+    }
     const isp = build(this.definition.properties.result.assessmentPending)
     return this._results.filter(result => isp(this.groupBy, {}, result))
   }

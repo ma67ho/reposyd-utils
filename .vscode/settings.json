@@ -4,6 +4,9 @@
     "mochaExplorer.logpanel": true,
     "mochaExplorer.require": "ts-node/register",
     "testExplorer.hideEmptyLog": true,
-    "testExplorer.mergeSuites": true
+    "testExplorer.mergeSuites": true,
+    "accessibility.signalOptions": {
+        "volume": 0
+    }
 
 }

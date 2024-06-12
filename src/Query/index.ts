@@ -1,4 +1,4 @@
-export enum QueryConditionOperator {  
+export enum QueryConditionOperator {
   CONTAINS = 'contains',
   CONTAINSNOT = 'containsnot',
   ENDSWITH = 'endswith',
@@ -157,24 +157,50 @@ function uriOperator(op: QueryConditionOperator): string {
 //   }
 //   return []
 // }
-export function toOData(definition: IQueryDefinition): string {
+export function toOData(definition: IQueryDefinition, dd): string {
   const frags = []
   for (const cond of definition.conditions) {
     if (cond.type === QueryConditionType.DDL) {
       frags.push(`${cond.subject[0]}->${cond.subject[1]} ${cond.subject[2]} ${uriOperator(cond.operator)} ${args(cond)}`)
     } else if (cond.type === QueryConditionType.DDO) {
-      let subject = Array.isArray(cond.subject) ? cond.subject.map(it => it.replace(/\./g, '/')) : cond.subject.replace(/\./g, '/')
-      if (Array.isArray(subject)) {
-        subject = subject.map(it => it.replace(/\$responsible/,'responsible/uuid').replace(/\$owner/,'owner/uuid'))
+      if (cond.operator === QueryConditionOperator.INCLUDEDIN) {
+        let subject: string = Array.isArray(cond.subject) ? cond.subject[0] : cond.subject
+        if (!subject.startsWith('attributes.')){
+          if (subject.startsWith('$')){
+            subject = subject.substring(1)
+          } else {
+            if (Object.keys(dd.attributes).some(it => it === subject)){
+              subject
+            }
+          }
+        }
+        frags.push(`${subject} in (${cond.value.map(it => typeof it === 'string' ? `'${it}'` : `${it}`).join()})`)
+      } else if (cond.operator === QueryConditionOperator.CONTAINS){
+        frags.push(`contains(${cond.subject},'${cond.value}')`)
+      } else if (cond.operator === QueryConditionOperator.CONTAINSNOT){
+        frags.push(`not contains(${cond.subject},'${cond.value}')`)
+      } else if (cond.operator === QueryConditionOperator.ENDSNOTWITH){
+        frags.push(`not endswith(${cond.subject},'${cond.value}')`)
+      } else if (cond.operator === QueryConditionOperator.ENDSWITH){
+        frags.push(`contains(${cond.subject},'${cond.value}')`)
+      } else if (cond.operator === QueryConditionOperator.STARTSNOTWITH){
+        frags.push(`not startswith(${cond.subject},'${cond.value}')`)
+      } else if (cond.operator === QueryConditionOperator.STARTSWITH){
+        frags.push(`startswith(${cond.subject},'${cond.value}')`)
       } else {
-        subject = subject.replace(/\$responsible/,'responsible/uuid').replace(/\$owner/,'owner/uuid')
-      }
-      if (returnsBoolean(cond.operator)) {
-        frags.push(`${uriOperator(cond.operator)}(${subject},${args(cond)}) eq ${isNegated(cond) ? 'false' : 'true'}`)
-      } else if (returnsNumber(cond.operator)) {
-        frags.push(`${uriOperator(cond.operator)}(${subject},${args(cond)}) ${uriOperator(cond.operator)} ${cond.value}`)
+        let subject = Array.isArray(cond.subject) ? cond.subject.map(it => it.replace(/\./g, '/')) : cond.subject.replace(/\./g, '/')
+        if (Array.isArray(subject)) {
+          subject = subject.map(it => it.replace(/\$responsible/, 'responsible/uuid').replace(/\$owner/, 'owner/uuid'))
         } else {
-        frags.push(`${subject} ${uriOperator(cond.operator)} ${args(cond)}`)
+          subject = subject.replace(/\$responsible/, 'responsible/uuid').replace(/\$owner/, 'owner/uuid')
+        }
+        if (returnsBoolean(cond.operator)) {
+          frags.push(`${uriOperator(cond.operator)}(${subject},${args(cond)}) eq ${isNegated(cond) ? 'false' : 'true'}`)
+        } else if (returnsNumber(cond.operator)) {
+          frags.push(`${uriOperator(cond.operator)}(${subject},${args(cond)}) ${uriOperator(cond.operator)} ${cond.value}`)
+        } else {
+          frags.push(`${subject} ${uriOperator(cond.operator)} ${args(cond)}`)
+        }
       }
     }
   }
@@ -193,7 +219,7 @@ export function toURI(definition: IQueryDefinition): string {
         frags.push(`${uriOperator(cond.operator)}(${cond.subject},${args(cond)}) eq ${isNegated(cond) ? 'false' : 'true'}`)
       } else if (returnsNumber(cond.operator)) {
         frags.push(`${uriOperator(cond.operator)}(${cond.subject},${args(cond)}) ${uriOperator(cond.operator)} ${cond.value}`)
-        } else {
+      } else {
         frags.push(`${cond.subject} ${uriOperator(cond.operator)} ${args(cond)}`)
       }
     }

@@ -164,16 +164,7 @@ export function toOData(definition: IQueryDefinition, dd): string {
       frags.push(`${cond.subject[0]}->${cond.subject[1]} ${cond.subject[2]} ${uriOperator(cond.operator)} ${args(cond)}`)
     } else if (cond.type === QueryConditionType.DDO) {
       if (cond.operator === QueryConditionOperator.INCLUDEDIN) {
-        let subject: string = Array.isArray(cond.subject) ? cond.subject[0] : cond.subject
-        if (!subject.startsWith('attributes.')){
-          if (subject.startsWith('$')){
-            subject = subject.substring(1)
-          } else {
-            if (Object.keys(dd.attributes).some(it => it === subject)){
-              subject
-            }
-          }
-        }
+        const subject: string = Array.isArray(cond.subject) ? cond.subject[0] : cond.subject
         frags.push(`${subject} in (${cond.value.map(it => typeof it === 'string' ? `'${it}'` : `${it}`).join()})`)
       } else if (cond.operator === QueryConditionOperator.CONTAINS){
         frags.push(`contains(${cond.subject},'${cond.value}')`)
